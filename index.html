@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#fbf8f2">
+  <title>Yedi Kart</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div id="flash" class="flash" aria-hidden="true"></div>
+
+  <main class="app">
+
+    <!-- Ana menü -->
+    <section id="screen-menu" class="screen active menu" aria-labelledby="menu-title">
+      <button type="button" class="icon-btn sound-btn menu-sound" aria-label="Sesi kapat">🔊</button>
+      <div class="hero" aria-hidden="true">
+        <span class="fcard c1">?</span>
+        <span class="fcard c2">×</span>
+        <span class="fcard c3">?</span>
+      </div>
+
+      <div class="menu-head">
+        <h1 id="menu-title" class="title big">Yedi Kart</h1>
+        <p class="tagline">Şansını çarp, skorunu büyüt.</p>
+      </div>
+
+      <ul class="steps">
+        <li>
+          <span class="badge b-blue" aria-hidden="true">1</span>
+          <div><b>Bir karta dokun</b><small>9 kapalı karttan birini aç</small></div>
+        </li>
+        <li>
+          <span class="badge b-mint" aria-hidden="true">×</span>
+          <div><b>Skorun çarpılır</b><small>1'den başlarsın, 7 tur oynarsın; aynı sayılar combo verir</small></div>
+        </li>
+        <li>
+          <span class="badge b-amber" aria-hidden="true">🔒</span>
+          <div><b>1 kez kasaya at</b><small>Skorunu koru, elin 1'e dönsün, sonda toplansın</small></div>
+        </li>
+        <li class="danger">
+          <span class="badge b-red" aria-hidden="true">0</span>
+          <div><b>Sıfıra dikkat!</b><small>0 açılırsa oyun anında biter</small></div>
+        </li>
+      </ul>
+
+      <div class="menu-actions">
+        <p id="menu-best" class="best" aria-live="polite"></p>
+        <button type="button" id="btn-play" class="btn primary big">Oyuna Başla</button>
+        <p class="foot">Kartlar her turdan sonra yeniden karışır</p>
+      </div>
+    </section>
+
+    <!-- Oyun ekranı -->
+    <section id="screen-game" class="screen" aria-label="Oyun">
+      <header class="game-head">
+        <h2 class="title small">Yedi Kart</h2>
+        <div class="head-right">
+          <span id="round-pill" class="pill" aria-live="polite">Tur 1 / 7</span>
+          <button type="button" class="icon-btn sound-btn" aria-label="Sesi kapat">🔊</button>
+        </div>
+      </header>
+
+      <div class="score-board">
+        <div class="score-card">
+          <span class="label">ELDEKİ SKOR</span>
+          <span id="score" class="score" aria-live="polite">1</span>
+        </div>
+
+        <div id="bank-card" class="bank-card">
+          <div class="bank-top">
+            <span class="label">KASA 🔒</span>
+            <span id="bank-score" class="bank-score" aria-live="polite">—</span>
+          </div>
+          <button type="button" id="btn-bank" class="btn bank-btn" disabled>Kasaya At</button>
+        </div>
+      </div>
+
+      <div id="grid" class="grid" role="group" aria-label="Kartlar"></div>
+
+      <div id="last-op" class="last-op" aria-live="polite">Bir karta dokun ve şansını dene!</div>
+
+      <div class="row">
+        <button type="button" id="btn-new" class="btn secondary">Yeni Oyun</button>
+        <button type="button" id="btn-menu-game" class="btn ghost">Ana Menü</button>
+      </div>
+    </section>
+
+    <!-- Sonuç ekranı (7 turu sıfır görmeden bitirenler) -->
+    <section id="screen-result" class="screen" aria-label="Sonuç">
+      <h2 class="title">Oyun Tamamlandı</h2>
+      <div class="score-card big">
+        <span class="label">FİNAL SKORU</span>
+        <span id="final-score" class="score">1</span>
+        <span id="result-breakdown" class="score-breakdown"></span>
+        <span class="game-ad-watermark">🃏 Yedi Kart</span>
+      </div>
+      <p id="result-rounds" class="muted"></p>
+      <p id="result-best" class="best" aria-live="polite"></p>
+
+      <div class="picked">
+        <span class="label">Seçilen kartlar</span>
+        <div id="picked-list" class="picked-list"></div>
+      </div>
+
+      <button type="button" id="btn-share" class="btn secondary">Sonucu Görsel Paylaş</button>
+
+      <div class="row">
+        <button type="button" id="btn-again" class="btn primary">Tekrar Oyna</button>
+        <button type="button" id="btn-menu-result" class="btn ghost">Ana Menü</button>
+      </div>
+    </section>
+
+    <!-- Game over (0 açıldığında) -->
+    <section id="screen-gameover" class="screen gameover" aria-label="Oyun bitti" aria-live="assertive">
+      <div class="go-zero" aria-hidden="true">0</div>
+      <h2 class="go-title">OYUN BİTTİ</h2>
+      <p class="go-sub">Sıfır geldi. Her şey bitti.</p>
+
+      <div class="go-lost">
+        <span class="go-label">Elindeki skor</span>
+        <span id="go-score" class="go-score">0</span>
+      </div>
+      <p id="go-detail" class="go-detail"></p>
+      <p id="go-combo" class="go-combo"></p>
+      <p id="go-bank" class="go-bank"></p>
+
+      <div class="go-picks">
+        <span class="go-label">Seçtiğin kartlar</span>
+        <div id="go-picks" class="picked-list"></div>
+      </div>
+
+      <p id="go-best" class="best dark" aria-live="polite"></p>
+
+      <button type="button" id="btn-share-go" class="btn ghost-dark">Sonucu Görsel Paylaş</button>
+
+      <div class="row go-actions">
+        <button type="button" id="btn-retry" class="btn danger-btn">Tekrar Dene</button>
+        <button type="button" id="btn-menu-gameover" class="btn ghost-dark">Ana Menü</button>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Onay kutusu (devam eden oyun varken Yeni Oyun / Ana Menü) -->
+  <dialog id="confirm-dialog" class="confirm" aria-labelledby="confirm-text">
+    <form method="dialog">
+      <p id="confirm-text"></p>
+      <div class="row">
+        <button type="submit" value="cancel" class="btn ghost">Vazgeç</button>
+        <button type="submit" value="ok" class="btn primary">Evet</button>
+      </div>
+    </form>
+  </dialog>
+
+  <script src="script.js"></script>
+</body>
+</html>
