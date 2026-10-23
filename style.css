@@ -58,8 +58,7 @@ body.dark {
 .muted { margin: 0; text-align: center; color: var(--muted); }
 .label { font-size: 0.75rem; font-weight: 700; letter-spacing: 1px; color: var(--muted); text-transform: uppercase; }
 
-/* ---------- Ana menü: tek ekrana sığar, kaydırma yok ---------- */
-body:has(#screen-menu.active) { overflow: hidden; }
+/* ---------- Ana menü: tek ekrana sığar (kaydırma kilidi yok; çek-yenile çalışır) ---------- */
 
 .menu {
   --safe-t: max(16px, env(safe-area-inset-top));
@@ -82,30 +81,37 @@ body:has(#screen-menu.active) { overflow: hidden; }
 .hero-panel {
   flex: 1 1 0; min-height: 0;
   display: flex; flex-direction: column; align-items: stretch; justify-content: center;
-  gap: clamp(8px, 2dvh, 16px);
-  padding: clamp(12px, 2.6dvh, 24px) 18px; text-align: center; border-radius: 28px;
+  gap: clamp(12px, 3dvh, 30px);
+  padding: clamp(14px, 3dvh, 28px) 20px; text-align: center; border-radius: 28px;
   background: linear-gradient(165deg, #e6f2fd 0%, #efeafc 100%);
   border: 1px solid #dde6f5; box-shadow: var(--shadow);
 }
-.hero-title {
-  margin: 0; font-size: clamp(1.5rem, min(4.4dvh, 9vw), 2.3rem);
-  line-height: 1.1; letter-spacing: -1px;
-}
-.hero-sub { margin: 0 auto; max-width: 30ch; color: var(--muted); font-size: 1rem; line-height: 1.45; }
 
-.hero { --ch: clamp(48px, 12dvh, 100px); position: relative; flex: none; height: calc(var(--ch) * 1.2); }
+/* Başlık + açıklama: tek blok, sıkı ve dengeli aralık */
+.hero-copy { display: flex; flex-direction: column; align-items: center; gap: 10px; }
+.hero-title {
+  margin: 0; font-size: clamp(1.55rem, min(4.8dvh, 9vw), 2.5rem); font-weight: 800;
+  line-height: 1.12; letter-spacing: -0.02em; text-wrap: balance;
+}
+.hero-sub {
+  margin: 0; max-width: 34ch; color: var(--muted);
+  font-size: 0.98rem; line-height: 1.5; text-wrap: balance;
+}
+
+/* Kart görseli: üç kart simetrik, ölçüler --ch'den türer */
+.hero { --ch: clamp(48px, 15dvh, 128px); position: relative; flex: none; height: calc(var(--ch) * 1.2); }
 .fcard {
   position: absolute; bottom: 0; left: 50%;
   width: calc(var(--ch) * 0.8); height: var(--ch); margin-left: calc(var(--ch) * -0.4);
   display: grid; place-items: center; border-radius: calc(var(--ch) * 0.2);
-  font-size: calc(var(--ch) * 0.23); font-weight: 800; color: rgba(255, 255, 255, 0.95);
+  font-size: calc(var(--ch) * 0.34); font-weight: 800; line-height: 1; color: rgba(255, 255, 255, 0.95);
   background: linear-gradient(135deg, var(--blue-strong), #7fb6ee);
   box-shadow: 0 10px 20px rgba(31, 42, 68, 0.16);
   transform-origin: 50% 120%;
 }
 .fcard.c1 { transform: translateX(calc(var(--ch) * -0.56)) rotate(-12deg); animation: float 4.2s ease-in-out infinite; }
 .fcard.c2 {
-  z-index: 2; background: linear-gradient(135deg, var(--mint-strong), #7fd1b0); font-size: calc(var(--ch) * 0.28);
+  z-index: 2; background: linear-gradient(135deg, var(--mint-strong), #7fd1b0); font-size: calc(var(--ch) * 0.42);
   animation: float 4.2s ease-in-out -1.4s infinite;
 }
 .fcard.c3 {
@@ -117,8 +123,12 @@ body:has(#screen-menu.active) { overflow: hidden; }
   50% { translate: 0 -6px; }
 }
 
+/* Düğme + alt not: aynı genişlik ve ritim */
 .menu-actions { display: flex; flex-direction: column; gap: 10px; align-items: stretch; }
-.foot { margin: 0; text-align: center; color: var(--muted); font-size: 0.85rem; }
+.menu-actions .btn.primary.big { min-height: 58px; font-size: 1.15rem; border-radius: 18px; letter-spacing: 0.01em; }
+.foot { margin: 0; text-align: center; color: var(--muted); font-size: 0.82rem; line-height: 1.3; }
+.menu-actions:has(.best:not(:empty)) .foot { display: none; }
+.menu-actions .best { font-size: 0.88rem; padding: 7px 14px; }
 
 .section-title {
   margin: 0; font-size: 0.78rem; font-weight: 700; letter-spacing: 1px;
@@ -143,7 +153,7 @@ body:has(#screen-menu.active) { overflow: hidden; }
 @media (max-height: 720px) { .foot { display: none; } }
 @media (max-height: 640px) {
   .hero-sub { display: none; }
-  .btn.primary.big { min-height: 54px; font-size: 1.15rem; }
+  .menu-actions .btn.primary.big { min-height: 52px; font-size: 1.1rem; }
 }
 @media (max-width: 360px) {
   .ct { font-size: 0.85rem; padding: 0 6px; gap: 6px; }
@@ -166,6 +176,7 @@ body:has(#screen-menu.active) { overflow: hidden; }
   .copyright { display: block; }
   .hero { --ch: clamp(44px, 14dvh, 70px); }
   .hero-title { font-size: clamp(1.3rem, 7dvh, 1.9rem); }
+  .hero-copy { gap: 0; }
 }
 
 /* Butonlar */
