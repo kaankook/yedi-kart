@@ -3,9 +3,8 @@
 /* ==========================================================
    Yedi Kart: oyun mantığı (DOM'dan bağımsız) + arayüz
    Kural: skor 1 ile başlar, seçilen kartın değeriyle çarpılır.
-   Oyuncu 7 tur boyunca 1 kez elindeki sayıyı kasaya atabilir;
-   kasadaki sayı dokunulmaz olur ve el tekrar 1'e düşer.
-   7 tur sonunda Eldeki Skor + Kasadaki Skor toplanır.
+   Aynı sayıyı üst üste seçersen COMBO olur ve çarpan büyür.
+   0 açılırsa oyun anında biter; 7 turu tamamlarsan skorun kalır.
    ========================================================== */
 
 const TOTAL_ROUNDS = 7;
@@ -34,7 +33,7 @@ function fmt(n) {
 
 function totalScore(state) {
   if (!state) return 0;
-  return normalize(state.score + (state.bankUsed ? state.bank : 0));
+  return normalize(state.score);
 }
 
 function comboCount(picks) {
@@ -63,9 +62,6 @@ function newGame(rng = Math.random) {
     score: START_SCORE,       // eldeki aktif skor
     scoreBefore: START_SCORE, // son seçimden önceki el skoru (game over ekranında kullanılır)
     comboLevel: 0,            // son seçimin dahil olduğu ardışık aynı sayı serisi
-    bank: 0,                  // kasaya atılan dokunulmaz skor
-    bankUsed: false,          // 7 tur boyunca yalnızca 1 kez kullanılabilir
-    bankedAt: null,           // kaçıncı seçimden sonra kasaya atıldığı (1..6)
     round: 1,                 // oynanmakta olan tur (1..7); yalnızca yeni tur dağıtılınca artar
     finished: false,
     busted: false,            // 0 açıldığı için oyun erken bittiyse true
@@ -78,21 +74,6 @@ function newGame(rng = Math.random) {
 function nextRound(state, rng = Math.random) {
   if (!state || state.finished || !state.locked) return state;
   return { ...state, cards: dealCards(rng), locked: false, round: state.picks.length + 1 };
-}
-
-// Eldeki skoru kasaya atar (oyun boyunca 1 kez). El tekrar 1'e düşer.
-function bankScore(state) {
-  if (!state || state.finished || state.bankUsed || state.picks.length === 0) return null;
-  const banked = state.score;
-  const op = `${fmt(banked)} kasaya atıldı 🔒 El: ${START_SCORE}`;
-  return {
-    ...state,
-    bank: banked,
-    bankUsed: true,
-    bankedAt: state.picks.length,
-    score: START_SCORE,
-    lastOp: op,
-  };
 }
 
 // Başarılıysa yeni durumu, geçersizse null döndürür. Hiçbir şeyi yarım güncellemez.
@@ -109,7 +90,7 @@ function pickCard(state, index) {
   const after = normalize(normalScore * (comboLevel >= 2 ? comboLevel : 1));
   const vText = card.value < 0 ? `(${card.value})` : `${card.value}`;
   const op = comboLevel >= 2
-    ? `${fmt(before)} × ${vText} = ${fmt(normalScore)} • ${comboLevel}x COMBO! ${fmt(normalScore)} × ${comboLevel} = ${fmt(after)}`
+    ? `${fmt(before)} × ${vText} × ${comboLevel} = ${fmt(after)}\n🔥 ${comboLevel}x COMBO`
     : `${fmt(before)} × ${vText} = ${fmt(after)}`;
 
   const picks = state.picks.concat(card.value);
@@ -131,40 +112,11 @@ function pickCard(state, index) {
   };
 }
 
-// Paylaşım metni (Wordle tarzı). Skor her zaman gerçek durumdan üretilir.
-const KEYCAPS = ['0️⃣', '1️⃣', '2️⃣', '3️⃣', '4️⃣', '5️⃣', '6️⃣', '7️⃣', '8️⃣', '9️⃣'];
-
-function pickEmoji(v) {
-  return v < 0 ? '➖' + KEYCAPS[-v] : KEYCAPS[v];
-}
-
-function buildShareText(s) {
-  const parts = [];
-  s.picks.forEach((v, i) => {
-    parts.push(pickEmoji(v));
-    if (s.bankUsed && s.bankedAt === i + 1) parts.push('🔒');
-  });
-  const picks = parts.join(' ➡️ ');
-  const combo = comboLabel(s);
-  const comboText = combo ? ` | ${combo}` : '';
-
-  if (s.busted) {
-    const safeNote = s.bankUsed ? ` | 🔒 Kasa: ${fmt(s.bank)}` : '';
-    return `💥 Yedi Kart — ${s.picks.length}. turda sıfır geldi (${fmt(s.scoreBefore)} → 0${safeNote}${comboText})\n` +
-           `Turlar: ${picks}💥`;
-  }
-  const total = totalScore(s);
-  if (s.bankUsed) {
-    return `🃏 Yedi Kart — Skor: ${fmt(total)} (El: ${fmt(s.score)} + 🔒 Kasa: ${fmt(s.bank)})${comboText}\nTurlar: ${picks}`;
-  }
-  return `🃏 Yedi Kart — Skor: ${fmt(total)}${comboText}\nTurlar: ${picks}`;
-}
-
 /* Node ile test edebilmek için */
 if (typeof module !== 'undefined' && module.exports) {
   module.exports = {
     TOTAL_ROUNDS, START_SCORE, CARD_VALUES,
-    shuffle, newGame, pickCard, bankScore, totalScore, nextRound, normalize, buildShareText, fmt,
+    shuffle, newGame, pickCard, totalScore, nextRound, normalize, fmt,
     comboCount, comboLabel,
   };
 }
@@ -196,50 +148,14 @@ if (typeof document !== 'undefined') {
   let peekTimer = null;
   let countRaf = null;
 
-  // Eski bir index.html kullanılsa bile Kasa ve Reklam DOM elemanlarını otomatik tamamlar.
-  function ensureBankDom() {
-    const gameScoreCard = $('#screen-game .score-card');
-    if (gameScoreCard && !$('#bank-card')) {
-      const board = document.createElement('div');
-      board.className = 'score-board';
-      gameScoreCard.parentNode.insertBefore(board, gameScoreCard);
-      gameScoreCard.querySelector('.label').textContent = 'ELDEKİ SKOR';
-      board.appendChild(gameScoreCard);
-
-      const bankCard = document.createElement('div');
-      bankCard.id = 'bank-card';
-      bankCard.className = 'bank-card';
-      bankCard.innerHTML =
-        '<div class="bank-top">' +
-          '<span class="label">KASA 🔒</span>' +
-          '<span id="bank-score" class="bank-score" aria-live="polite">—</span>' +
-        '</div>' +
-        '<button type="button" id="btn-bank" class="btn bank-btn" disabled>Kasaya At</button>';
-      board.appendChild(bankCard);
-    }
-
+  // Eski bir index.html kullanılsa bile gerekli DOM elemanlarını otomatik tamamlar.
+  function ensureDom() {
     const finalCard = $('#screen-result .score-card.big');
-    if (finalCard) {
-      if (!$('#result-breakdown')) {
-        const br = document.createElement('span');
-        br.id = 'result-breakdown';
-        br.className = 'score-breakdown';
-        finalCard.appendChild(br);
-      }
-      if (!finalCard.querySelector('.game-ad-watermark')) {
-        const wm = document.createElement('span');
-        wm.className = 'game-ad-watermark';
-        wm.textContent = '🃏 Yedi Kart';
-        finalCard.appendChild(wm);
-      }
-    }
-
-    const goDetail = $('#go-detail');
-    if (goDetail && !$('#go-bank')) {
-      const gb = document.createElement('p');
-      gb.id = 'go-bank';
-      gb.className = 'go-bank';
-      goDetail.insertAdjacentElement('afterend', gb);
+    if (finalCard && !$('#result-breakdown')) {
+      const br = document.createElement('span');
+      br.id = 'result-breakdown';
+      br.className = 'score-breakdown';
+      finalCard.appendChild(br);
     }
 
     const game = $('#screen-game');
@@ -263,7 +179,6 @@ if (typeof document !== 'undefined') {
     $('#screen-game').classList.remove('shake');
     $('#score').classList.remove('bump');
     $('#round-pill').classList.remove('bump');
-    if ($('#bank-score')) $('#bank-score').classList.remove('bump');
     const comboBanner = $('#combo-banner');
     if (comboBanner) {
       comboBanner.classList.remove('show');
@@ -446,13 +361,6 @@ if (typeof document !== 'undefined') {
     });
   }
 
-  function playBank() {
-    withAudio((c) => {
-      tone(c, { freq: 523.25, type: 'triangle', at: 0, dur: 0.11, gain: 0.18 });
-      tone(c, { freq: 783.99, type: 'triangle', at: 0.09, dur: 0.22, gain: 0.2 });
-    });
-  }
-
   function playResult(before, after, busted) {
     withAudio((c) => {
       if (busted) {
@@ -511,9 +419,6 @@ if (typeof document !== 'undefined') {
         Array.isArray(s.picks) &&
         typeof s.score === 'number' && typeof s.finished === 'boolean'
       ) {
-        if (typeof s.bank !== 'number') s.bank = 0;
-        if (typeof s.bankUsed !== 'boolean') s.bankUsed = false;
-        if (s.bankedAt === undefined) s.bankedAt = null;
         return s;
       }
     } catch (e) { /* bozuk kayıt */ }
@@ -613,47 +518,14 @@ if (typeof document !== 'undefined') {
     });
   }
 
-  function renderBankInfo(animateBank) {
-    const bankCard = $('#bank-card');
-    const bankScoreEl = $('#bank-score');
-    const bankBtn = $('#btn-bank');
-    if (!bankCard || !bankScoreEl || !bankBtn) return;
-
-    bankCard.classList.toggle('locked', !!state.bankUsed);
-
-    if (state.bankUsed) {
-      bankScoreEl.textContent = fmt(state.bank);
-      bankScoreEl.classList.toggle('neg', state.bank < 0);
-      if (animateBank) retrigger(bankScoreEl, 'bump');
-      bankBtn.disabled = true;
-      bankBtn.textContent = 'Kilitlendi 🔒';
-    } else {
-      bankScoreEl.textContent = '—';
-      bankScoreEl.classList.remove('neg');
-      const canBank = !state.finished && state.picks.length > 0;
-      bankBtn.disabled = !canBank;
-      bankBtn.textContent = 'Kasaya At';
-    }
-  }
-
-  function renderGameInfo(animate, pulseRound, animateBank = false) {
+  function renderGameInfo(animate, pulseRound) {
     const pill = $('#round-pill');
     const text = `Tur ${state.round} / ${TOTAL_ROUNDS}`;
     const changed = pill.textContent !== text;
     pill.textContent = text;
     if (changed && pulseRound) retrigger(pill, 'bump');
     setScore($('#score'), state.score, animate);
-    renderBankInfo(animateBank);
     $('#last-op').textContent = state.lastOp ? state.lastOp : HINT_TEXT;
-  }
-
-  function onBankClick() {
-    const next = bankScore(state);
-    if (!next) return;
-    state = next;
-    saveState();
-    playBank();
-    renderGameInfo(true, false, true);
   }
 
   function startGame() {
@@ -732,14 +604,6 @@ if (typeof document !== 'undefined') {
       item.className = 'picked-item' + (v < 0 ? ' neg' : '') + (isDoom ? ' doom' : '');
       item.textContent = String(v);
       container.appendChild(item);
-
-      if (s.bankUsed && s.bankedAt === i + 1) {
-        const lock = document.createElement('span');
-        lock.className = 'picked-lock';
-        lock.title = `${fmt(s.bank)} kasaya atıldı`;
-        lock.textContent = '🔒';
-        container.appendChild(lock);
-      }
     });
   }
 
@@ -752,10 +616,7 @@ if (typeof document !== 'undefined') {
 
     const breakdownEl = $('#result-breakdown');
     if (breakdownEl) {
-      const details = state.bankUsed
-        ? `El: ${fmt(state.score)} + Kasa: ${fmt(state.bank)} 🔒`
-        : '';
-      breakdownEl.textContent = [details, comboLabel(state)].filter(Boolean).join(' • ');
+      breakdownEl.textContent = comboLabel(state);
     }
 
     $('#result-rounds').textContent = `${state.picks.length} / ${TOTAL_ROUNDS} tur oynandı`;
@@ -819,13 +680,6 @@ if (typeof document !== 'undefined') {
     const goComboEl = $('#go-combo');
     if (goComboEl) goComboEl.textContent = comboLabel(state);
 
-    const goBankEl = $('#go-bank');
-    if (goBankEl) {
-      goBankEl.textContent = state.bankUsed
-        ? `🔒 Kasadaki dokunulmaz skor: ${fmt(state.bank)}`
-        : '';
-    }
-
     renderPickList($('#go-picks'), state, true);
 
     const prev = loadBest();
@@ -833,334 +687,6 @@ if (typeof document !== 'undefined') {
 
     showScreen('gameover');
     countTo($('#go-score'), state.scoreBefore, 0, 1100, 850);
-  }
-
-  /* ---------- Sosyal Medya Paylaşım Görseli Üretici (Canvas 2D) ---------- */
-
-  function roundRect(ctx, x, y, w, h, r) {
-    const radius = Math.min(r, w / 2, h / 2);
-    ctx.beginPath();
-    ctx.moveTo(x + radius, y);
-    ctx.arcTo(x + w, y, x + w, y + h, radius);
-    ctx.arcTo(x + w, y + h, x, y + h, radius);
-    ctx.arcTo(x, y + h, x, y, radius);
-    ctx.arcTo(x, y, x + w, y, radius);
-    ctx.closePath();
-  }
-
-  function generateShareCardBlob(s) {
-    return new Promise((resolve) => {
-      const W = 1080;
-      const H = 1350;
-      const canvas = document.createElement('canvas');
-      canvas.width = W;
-      canvas.height = H;
-      const ctx = canvas.getContext('2d');
-      const font = 'system-ui, -apple-system, "Segoe UI", Roboto, sans-serif';
-      const isBusted = !!s.busted;
-
-      // 1. Arka Plan
-      if (isBusted) {
-        const bgGrad = ctx.createRadialGradient(W / 2, H * 0.22, 60, W / 2, H / 2, W * 0.95);
-        bgGrad.addColorStop(0, '#52121b');
-        bgGrad.addColorStop(0.55, '#1d0b13');
-        bgGrad.addColorStop(1, '#0d060a');
-        ctx.fillStyle = bgGrad;
-      } else {
-        const bgGrad = ctx.createLinearGradient(0, 0, W, H);
-        bgGrad.addColorStop(0, '#fbf8f2');
-        bgGrad.addColorStop(1, '#f0eadc');
-        ctx.fillStyle = bgGrad;
-      }
-      ctx.fillRect(0, 0, W, H);
-
-      // Dekoratif arka plan kart silüetleri
-      ctx.save();
-      ctx.translate(W * 0.85, H * 0.14);
-      ctx.rotate(0.22);
-      roundRect(ctx, -90, -115, 180, 230, 36);
-      ctx.fillStyle = isBusted ? 'rgba(255, 90, 82, 0.06)' : 'rgba(123, 95, 208, 0.08)';
-      ctx.fill();
-      ctx.restore();
-
-      ctx.save();
-      ctx.translate(W * 0.14, H * 0.82);
-      ctx.rotate(-0.2);
-      roundRect(ctx, -85, -110, 170, 220, 34);
-      ctx.fillStyle = isBusted ? 'rgba(255, 90, 82, 0.05)' : 'rgba(74, 144, 217, 0.08)';
-      ctx.fill();
-      ctx.restore();
-
-      // 2. Üst Başlık / Durum Rozeti
-      ctx.textAlign = 'center';
-      ctx.textBaseline = 'middle';
-
-      const pillText = isBusted
-        ? `💥 ${s.picks.length}. TURDA SIFIR GELDİ`
-        : `✨ ${s.picks.length} / ${TOTAL_ROUNDS} TUR TAMAMLANDI`;
-      ctx.font = `800 30px ${font}`;
-      const pillW = Math.max(460, ctx.measureText(pillText).width + 80);
-      roundRect(ctx, (W - pillW) / 2, 96, pillW, 68, 34);
-      ctx.fillStyle = isBusted ? 'rgba(255, 90, 82, 0.18)' : '#d8cdf7';
-      ctx.fill();
-
-      ctx.fillStyle = isBusted ? '#ff9a94' : '#3d2c85';
-      ctx.fillText(pillText, W / 2, 130);
-
-      // Ana Başlık
-      ctx.font = `900 72px ${font}`;
-      ctx.fillStyle = isBusted ? '#ffffff' : '#1f2a44';
-      ctx.fillText(isBusted ? 'OYUN BİTTİ' : 'YEDİ KART SKORUM', W / 2, 240);
-
-      // 3. Ana Skor Kartı
-      const cardX = 84;
-      const cardY = 315;
-      const cardW = W - 168;
-      const cardH = 430;
-
-      ctx.save();
-      ctx.shadowColor = isBusted ? 'rgba(0, 0, 0, 0.5)' : 'rgba(31, 42, 68, 0.12)';
-      ctx.shadowBlur = 40;
-      ctx.shadowOffsetY = 16;
-      roundRect(ctx, cardX, cardY, cardW, cardH, 44);
-      ctx.fillStyle = isBusted ? '#261019' : '#ffffff';
-      ctx.fill();
-      ctx.restore();
-
-      roundRect(ctx, cardX, cardY, cardW, cardH, 44);
-      ctx.lineWidth = 4;
-      ctx.strokeStyle = isBusted ? 'rgba(255, 90, 82, 0.4)' : '#e8e3d8';
-      ctx.stroke();
-
-      // Skor Etiketi
-      ctx.font = `800 30px ${font}`;
-      ctx.fillStyle = isBusted ? 'rgba(255, 255, 255, 0.65)' : '#6b7690';
-      ctx.fillText(isBusted ? 'ELDEKİ SKOR SIFIRLANDI' : 'FİNAL SKORU', W / 2, cardY + 78);
-
-      // Büyük Skor Sayısı
-      const mainScoreValue = isBusted ? 0 : totalScore(s);
-      const scoreStr = fmt(mainScoreValue);
-      const scoreFontSize = scoreStr.length > 7 ? 125 : scoreStr.length > 5 ? 150 : 175;
-      ctx.font = `900 ${scoreFontSize}px ${font}`;
-      ctx.fillStyle = isBusted
-        ? '#ff5a52'
-        : mainScoreValue < 0 ? '#d9534f' : '#1f2a44';
-      ctx.fillText(scoreStr, W / 2, cardY + 225);
-
-      // Alt Detay (Kasa veya Kaybedilen Skor)
-      if (isBusted) {
-        const subText = s.bankUsed
-          ? `Kaybedilen El: ${fmt(s.scoreBefore)}  •  🔒 Kasa: ${fmt(s.bank)}`
-          : `Sıfır açılmadan önce eldeki skor: ${fmt(s.scoreBefore)}`;
-        ctx.font = `700 34px ${font}`;
-        ctx.fillStyle = s.bankUsed ? '#fce8b2' : '#ffb9b4';
-        ctx.fillText(subText, W / 2, cardY + 355);
-      } else if (s.bankUsed) {
-        const subText = `El: ${fmt(s.score)}  +  🔒 Kasa: ${fmt(s.bank)}`;
-        ctx.font = `800 36px ${font}`;
-        ctx.fillStyle = '#9c5308';
-        const subW = ctx.measureText(subText).width + 64;
-        roundRect(ctx, (W - subW) / 2, cardY + 318, subW, 68, 22);
-        ctx.fillStyle = '#fce8b2';
-        ctx.fill();
-        ctx.fillStyle = '#7a460c';
-        ctx.fillText(subText, W / 2, cardY + 352);
-      } else {
-        const best = loadBest();
-        const badgeText = (best !== null && mainScoreValue >= best)
-          ? '🏆 KİŞİSEL REKOR!'
-          : 'Kasa kullanılmadan tamamlandı';
-        ctx.font = `700 32px ${font}`;
-        ctx.fillStyle = '#2f9e75';
-        ctx.fillText(badgeText, W / 2, cardY + 352);
-      }
-
-      const combo = comboLabel(s);
-      if (combo) {
-        ctx.font = `900 30px ${font}`;
-        ctx.fillStyle = isBusted ? '#ffb9b4' : '#7b5fd0';
-        ctx.fillText(combo, W / 2, cardY + 405);
-      }
-
-      // 4. Seçilen Kartlar Bölümü
-      ctx.font = `800 28px ${font}`;
-      ctx.fillStyle = isBusted ? 'rgba(255, 255, 255, 0.65)' : '#6b7690';
-      ctx.fillText('SEÇİLEN KARTLAR', W / 2, 830);
-
-      // Kart dizisini oluştur (kartlar + varsa kasa kilidi)
-      const tokens = [];
-      s.picks.forEach((v, i) => {
-        tokens.push({ type: 'card', value: v, doom: isBusted && i === s.picks.length - 1 });
-        if (s.bankUsed && s.bankedAt === i + 1) {
-          tokens.push({ type: 'lock' });
-        }
-      });
-
-      const gap = 16;
-      const boxSize = tokens.length > 7 ? 96 : 108;
-      const lockW = 68;
-      const totalRowW = tokens.reduce((acc, t) => acc + (t.type === 'lock' ? lockW : boxSize), 0)
-                        + gap * Math.max(0, tokens.length - 1);
-      let curX = (W - totalRowW) / 2;
-      const rowY = 885;
-
-      tokens.forEach((t) => {
-        if (t.type === 'lock') {
-          roundRect(ctx, curX, rowY + (boxSize - 68) / 2, lockW, 68, 20);
-          ctx.fillStyle = '#fce8b2';
-          ctx.fill();
-          ctx.lineWidth = 3;
-          ctx.strokeStyle = '#d9822b';
-          ctx.stroke();
-          ctx.font = `40px ${font}`;
-          ctx.fillText('🔒', curX + lockW / 2, rowY + boxSize / 2 + 2);
-          curX += lockW + gap;
-          return;
-        }
-
-        roundRect(ctx, curX, rowY, boxSize, boxSize, 26);
-        if (t.doom) {
-          ctx.fillStyle = '#ff5a52';
-          ctx.strokeStyle = '#ff5a52';
-        } else if (t.value < 0) {
-          ctx.fillStyle = isBusted ? 'rgba(217, 83, 79, 0.2)' : '#fdf3f2';
-          ctx.strokeStyle = '#d9534f';
-        } else {
-          ctx.fillStyle = isBusted ? 'rgba(255, 255, 255, 0.1)' : '#ffffff';
-          ctx.strokeStyle = isBusted ? 'rgba(255, 255, 255, 0.25)' : '#2f9e75';
-        }
-        ctx.fill();
-        ctx.lineWidth = 4;
-        ctx.stroke();
-
-        ctx.font = `900 46px ${font}`;
-        ctx.fillStyle = t.doom
-          ? '#ffffff'
-          : t.value < 0
-            ? (isBusted ? '#ff9a94' : '#d9534f')
-            : (isBusted ? '#ffffff' : '#1f2a44');
-        ctx.fillText(String(t.value), curX + boxSize / 2, rowY + boxSize / 2 + 2);
-        curX += boxSize + gap;
-      });
-
-      // 5. Alt Marka / Oyun Reklamı Bandı (Köşe + Alt Tanıtım Kartı)
-      const adY = 1095;
-      const adH = 165;
-      roundRect(ctx, 84, adY, W - 168, adH, 36);
-      const adGrad = ctx.createLinearGradient(84, adY, W - 84, adY + adH);
-      adGrad.addColorStop(0, '#4a90d9');
-      adGrad.addColorStop(1, '#7b5fd0');
-      ctx.fillStyle = adGrad;
-      ctx.fill();
-
-      // Sol 미니 kart ikonu
-      roundRect(ctx, 120, adY + 28, 88, 109, 20);
-      ctx.fillStyle = 'rgba(255, 255, 255, 0.22)';
-      ctx.fill();
-      ctx.font = `900 54px ${font}`;
-      ctx.fillStyle = '#ffffff';
-      ctx.fillText('×7', 164, adY + 84);
-
-      // Oyun İsmi ve Sloganı
-      ctx.textAlign = 'left';
-      ctx.font = `900 48px ${font}`;
-      ctx.fillStyle = '#ffffff';
-      ctx.fillText('Yedi Kart', 238, adY + 62);
-
-      ctx.font = `600 28px ${font}`;
-      ctx.fillStyle = 'rgba(255, 255, 255, 0.9)';
-      ctx.fillText('Şansını çarp, skorunu büyüt!', 238, adY + 112);
-
-      // Sağ Köşe Rozeti ("SEN DE OYNA")
-      ctx.textAlign = 'center';
-      roundRect(ctx, W - 340, adY + 48, 220, 70, 35);
-      ctx.fillStyle = '#ffffff';
-      ctx.fill();
-      ctx.font = `900 26px ${font}`;
-      ctx.fillStyle = '#4a3294';
-      ctx.fillText('SEN DE OYNA', W - 230, adY + 84);
-
-      canvas.toBlob((blob) => resolve(blob), 'image/png', 1.0);
-    });
-  }
-
-  /* ---------- Sonuç paylaşımı ---------- */
-
-  function flashLabel(btn, text) {
-    if (!btn) return;
-    if (!btn.dataset.label) btn.dataset.label = btn.textContent;
-    btn.textContent = text;
-    clearTimeout(btn._t);
-    btn._t = setTimeout(() => { btn.textContent = btn.dataset.label; }, 1800);
-  }
-
-  function copyFallback(text) {
-    const ta = document.createElement('textarea');
-    ta.value = text;
-    ta.setAttribute('readonly', '');
-    ta.style.cssText = 'position:fixed;opacity:0;top:0;left:0';
-    document.body.appendChild(ta);
-    ta.select();
-    let ok = false;
-    try { ok = document.execCommand('copy'); } catch (e) { /* yok say */ }
-    ta.remove();
-    return ok;
-  }
-
-  function downloadBlob(blob, filename) {
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = filename;
-    document.body.appendChild(a);
-    a.click();
-    a.remove();
-    setTimeout(() => URL.revokeObjectURL(url), 3000);
-  }
-
-  async function shareResult(btn) {
-    if (!state || !state.finished) return;
-    if (btn && !btn.dataset.label) btn.dataset.label = btn.textContent;
-    if (btn) {
-      btn.textContent = 'Görsel Hazırlanıyor...';
-      btn.disabled = true;
-    }
-
-    try {
-      let text = buildShareText(state);
-      if (/^https?:$/.test(location.protocol)) text += `\n${location.origin}${location.pathname}`;
-
-      const blob = await generateShareCardBlob(state);
-      const filename = `yedi-kart-skor-${Date.now()}.png`;
-      const file = blob ? new File([blob], filename, { type: 'image/png' }) : null;
-
-      // Mobil cihazda görsel dosyası paylaşımı destekleniyorsa doğrudan paylaşım menüsünü aç
-      if (file && navigator.share && navigator.canShare && navigator.canShare({ files: [file] })) {
-        try {
-          await navigator.share({
-            files: [file],
-            title: 'Yedi Kart Skorum',
-            text,
-          });
-          if (btn) btn.textContent = btn.dataset.label;
-          return;
-        } catch (e) {
-          if (e && e.name === 'AbortError') {
-            if (btn) btn.textContent = btn.dataset.label;
-            return;
-          }
-        }
-      }
-
-      // Masaüstünde (veya dosya paylaşımı desteklenmeyen tarayıcıda) görseli indir + metni kopyala
-      if (blob) downloadBlob(blob, 'yedi-kart-skor.png');
-      try { await navigator.clipboard.writeText(text); } catch (e) { copyFallback(text); }
-      flashLabel(btn, 'Görsel İndirildi ✓');
-    } catch (err) {
-      flashLabel(btn, 'Paylaşılamadı');
-    } finally {
-      if (btn) btn.disabled = false;
-    }
   }
 
   function inProgress() {
@@ -1182,14 +708,13 @@ if (typeof document !== 'undefined') {
     startGame();
   }
 
-  ensureBankDom();
+  ensureDom();
 
   // Olaylar
   $('#grid').addEventListener('click', (e) => {
     const btn = e.target.closest('.card');
     if (btn) onCardClick(Number(btn.dataset.index));
   });
-  $('#btn-bank').addEventListener('click', onBankClick);
   $('#btn-play').addEventListener('click', startGame);
   $('#btn-new').addEventListener('click', onNewGame);
   $('#btn-again').addEventListener('click', startGame);
@@ -1197,8 +722,6 @@ if (typeof document !== 'undefined') {
   $('#btn-menu-gameover').addEventListener('click', goMenu);
   $('#btn-menu-game').addEventListener('click', goMenu);
   $('#btn-menu-result').addEventListener('click', goMenu);
-  $('#btn-share').addEventListener('click', (e) => shareResult(e.currentTarget));
-  $('#btn-share-go').addEventListener('click', (e) => shareResult(e.currentTarget));
   $$('.sound-btn').forEach((b) => b.addEventListener('click', toggleSound));
 
   syncSoundButtons();

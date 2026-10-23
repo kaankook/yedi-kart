@@ -35,10 +35,6 @@
           <span class="badge b-mint" aria-hidden="true">×</span>
           <div><b>Skorun çarpılır</b><small>1'den başlarsın, 7 tur oynarsın; aynı sayılar combo verir</small></div>
         </li>
-        <li>
-          <span class="badge b-amber" aria-hidden="true">🔒</span>
-          <div><b>1 kez kasaya at</b><small>Skorunu koru, elin 1'e dönsün, sonda toplansın</small></div>
-        </li>
         <li class="danger">
           <span class="badge b-red" aria-hidden="true">0</span>
           <div><b>Sıfıra dikkat!</b><small>0 açılırsa oyun anında biter</small></div>
@@ -62,19 +58,9 @@
         </div>
       </header>
 
-      <div class="score-board">
-        <div class="score-card">
-          <span class="label">ELDEKİ SKOR</span>
-          <span id="score" class="score" aria-live="polite">1</span>
-        </div>
-
-        <div id="bank-card" class="bank-card">
-          <div class="bank-top">
-            <span class="label">KASA 🔒</span>
-            <span id="bank-score" class="bank-score" aria-live="polite">—</span>
-          </div>
-          <button type="button" id="btn-bank" class="btn bank-btn" disabled>Kasaya At</button>
-        </div>
+      <div class="score-card">
+        <span class="label">SKOR</span>
+        <span id="score" class="score" aria-live="polite">1</span>
       </div>
 
       <div id="grid" class="grid" role="group" aria-label="Kartlar"></div>
@@ -94,7 +80,6 @@
         <span class="label">FİNAL SKORU</span>
         <span id="final-score" class="score">1</span>
         <span id="result-breakdown" class="score-breakdown"></span>
-        <span class="game-ad-watermark">🃏 Yedi Kart</span>
       </div>
       <p id="result-rounds" class="muted"></p>
       <p id="result-best" class="best" aria-live="polite"></p>
@@ -103,8 +88,6 @@
         <span class="label">Seçilen kartlar</span>
         <div id="picked-list" class="picked-list"></div>
       </div>
-
-      <button type="button" id="btn-share" class="btn secondary">Sonucu Görsel Paylaş</button>
 
       <div class="row">
         <button type="button" id="btn-again" class="btn primary">Tekrar Oyna</button>
@@ -124,7 +107,6 @@
       </div>
       <p id="go-detail" class="go-detail"></p>
       <p id="go-combo" class="go-combo"></p>
-      <p id="go-bank" class="go-bank"></p>
 
       <div class="go-picks">
         <span class="go-label">Seçtiğin kartlar</span>
@@ -132,8 +114,6 @@
       </div>
 
       <p id="go-best" class="best dark" aria-live="polite"></p>
-
-      <button type="button" id="btn-share-go" class="btn ghost-dark">Sonucu Görsel Paylaş</button>
 
       <div class="row go-actions">
         <button type="button" id="btn-retry" class="btn danger-btn">Tekrar Dene</button>
