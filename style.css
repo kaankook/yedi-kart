@@ -125,51 +125,28 @@ body:has(#screen-menu.active) { overflow: hidden; }
   text-transform: uppercase; color: var(--muted);
 }
 
-/* İletişim ve sosyal medya */
-.site-footer {
-  flex: none;
-  display: flex; flex-direction: column; align-items: center; gap: 6px;
-  padding: 14px 16px 12px;
-  background: var(--surface); border: 1px solid var(--line); border-radius: 22px;
+/* İletişim: sayfaya gömülü, tek renk, minimal */
+.site-footer { flex: none; display: flex; flex-direction: column; align-items: center; padding-bottom: 2px; }
+.ct {
+  display: inline-flex; align-items: center; gap: 7px; min-height: 40px; padding: 0 8px;
+  color: var(--muted); font-size: 0.9rem; font-weight: 600; text-decoration: none;
+  transition: color 0.2s;
 }
-.contact-mail {
-  display: inline-flex; align-items: center; gap: 8px; min-height: 44px; padding: 0 6px;
-  color: var(--ink); font-weight: 700; font-size: 1rem; text-decoration: none;
-  overflow-wrap: anywhere;
-}
-.contact-mail svg { flex: none; color: var(--blue-strong); }
-.social { list-style: none; margin: 0; padding: 0; width: 100%; display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-.social li { min-width: 0; }
-.social-link {
-  display: flex; align-items: center; justify-content: center; gap: 8px; min-height: 44px; padding: 0 10px;
-  border-radius: 999px; border: 2px solid var(--line); background: var(--bg);
-  color: var(--ink); font-weight: 700; font-size: 0.9rem; text-decoration: none;
-  transition: transform 0.08s, border-color 0.2s;
-}
-@media (hover: hover) {
-  .contact-mail:hover span { text-decoration: underline; }
-  .social-link:hover { border-color: var(--blue-strong); }
-}
-.social-link:active { transform: scale(0.96); }
-.contact-mail:focus-visible, .social-link:focus-visible { outline: 3px solid var(--blue-strong); outline-offset: 2px; border-radius: 12px; }
-.social-link:focus-visible { border-radius: 999px; }
-.copyright {
-  width: 100%; margin: 4px 0 0; padding-top: 10px; border-top: 1px solid var(--line);
-  color: var(--muted); font-size: 0.8rem; text-align: center;
-}
+.ct svg { flex: none; }
+.ct-row { display: flex; align-items: center; justify-content: center; }
+.ct-dot { color: var(--muted); opacity: 0.5; }
+@media (hover: hover) { .ct:hover { color: var(--ink); } }
+.ct:focus-visible { outline: 3px solid var(--blue-strong); outline-offset: 2px; border-radius: 8px; }
+.copyright { margin: 2px 0 0; color: var(--muted); font-size: 0.75rem; text-align: center; }
 
 /* Kısa ekranlar: önce ikincil metinler gider, böylece menü hep tek ekrana sığar */
 @media (max-height: 720px) { .foot { display: none; } }
 @media (max-height: 640px) {
   .hero-sub { display: none; }
   .btn.primary.big { min-height: 54px; font-size: 1.15rem; }
-  .site-footer { padding: 10px 14px 8px; gap: 2px; }
-  .copyright { padding-top: 6px; margin-top: 0; }
 }
 @media (max-width: 360px) {
-  .site-footer { padding-left: 10px; padding-right: 10px; }
-  .social { gap: 8px; }
-  .social-link { gap: 6px; font-size: 0.85rem; }
+  .ct { font-size: 0.85rem; padding: 0 6px; gap: 6px; }
 }
 @media (max-height: 540px) {
   .hero { --ch: 50px; }
@@ -181,7 +158,7 @@ body:has(#screen-menu.active) { overflow: hidden; }
 /* Yatay telefon: iki sütun (sol: oyuna giriş, sağ: iletişim) */
 @media (orientation: landscape) and (max-height: 520px) {
   body:has(#screen-menu.active) .app { max-width: 880px; }
-  .menu.active { display: grid; grid-template-columns: 1.25fr 1fr; grid-template-rows: auto minmax(0, 1fr); column-gap: 16px; row-gap: 8px; }
+  .menu.active { display: grid; grid-template-columns: 1fr 1fr; grid-template-rows: auto minmax(0, 1fr); column-gap: 16px; row-gap: 8px; }
   .menu-top { grid-column: 1 / -1; }
   .hero-panel { grid-column: 1; grid-row: 2; }
   .site-footer { grid-column: 2; grid-row: 2; justify-content: center; align-self: stretch; }
@@ -480,8 +457,8 @@ body:has(#screen-menu.active) { overflow: hidden; }
 
   /* Skor, tur ve düğme vurguları */
   .pill.bump, .score.bump { animation: none; }
-  .btn, .icon-btn, .social-link { transition: none; }
-  .btn:active:not(:disabled), .icon-btn:active, .social-link:active { transform: none; }
+  .btn, .icon-btn, .ct { transition: none; }
+  .btn:active:not(:disabled), .icon-btn:active { transform: none; }
   body { transition: none; }
   .fcard { animation: none; }
 
