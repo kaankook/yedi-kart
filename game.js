@@ -87,7 +87,7 @@ function pickCard(state, index) {
   const after = normalize(normalScore * (comboLevel >= 2 ? comboLevel : 1));
   const vText = card.value < 0 ? `(${card.value})` : `${card.value}`;
   const op = comboLevel >= 2
-    ? `${fmt(before)} × ${vText} × ${comboLevel} = ${fmt(after)}\n🔥 ${comboLevel}x COMBO`
+    ? `${fmt(before)} × ${vText} × ${comboLevel} = ${fmt(after)}`
     : `${fmt(before)} × ${vText} = ${fmt(after)}`;
 
   const picks = state.picks.concat(card.value);

@@ -129,6 +129,31 @@ body.dark {
 .row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
 .row .btn { width: 100%; }
 
+/* ---------- Alt bilgi: iletişim ve sosyal medya (yalnızca ana menü) ---------- */
+.site-footer {
+  display: flex; flex-direction: column; align-items: center; gap: 10px;
+  margin-top: 6px; padding-top: 16px; border-top: 1px solid var(--line);
+}
+.contact-mail {
+  display: inline-flex; align-items: center; gap: 8px; min-height: 44px; padding: 0 6px;
+  color: var(--ink); font-weight: 700; font-size: 0.95rem; text-decoration: none;
+  overflow-wrap: anywhere;
+}
+.contact-mail svg { flex: none; color: var(--blue-strong); }
+.contact-mail:hover span { text-decoration: underline; }
+.social { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; justify-content: center; gap: 10px; }
+.social-link {
+  display: inline-flex; align-items: center; gap: 8px; min-height: 44px; padding: 0 16px;
+  border-radius: 999px; border: 2px solid var(--line); background: var(--surface);
+  color: var(--ink); font-weight: 700; font-size: 0.9rem; text-decoration: none;
+  transition: transform 0.08s, border-color 0.2s;
+}
+.social-link:hover { border-color: var(--blue-strong); }
+.social-link:active { transform: scale(0.96); }
+.contact-mail:focus-visible, .social-link:focus-visible { outline: 3px solid var(--blue-strong); outline-offset: 2px; border-radius: 12px; }
+.social-link:focus-visible { border-radius: 999px; }
+.copyright { margin: 4px 0 0; color: var(--muted); font-size: 0.8rem; text-align: center; }
+
 /* ---------- Oyun ekranı ---------- */
 .game-head { display: flex; align-items: center; justify-content: space-between; }
 .head-right { display: flex; align-items: center; gap: 8px; }
@@ -404,8 +429,8 @@ body.dark {
 
   /* Skor, tur ve düğme vurguları */
   .pill.bump, .score.bump { animation: none; }
-  .btn, .icon-btn { transition: none; }
-  .btn:active:not(:disabled), .icon-btn:active { transform: none; }
+  .btn, .icon-btn, .social-link { transition: none; }
+  .btn:active:not(:disabled), .icon-btn:active, .social-link:active { transform: none; }
   body { transition: none; }
   .fcard { animation: none; }
 
