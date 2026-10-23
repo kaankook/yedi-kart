@@ -22,41 +22,33 @@
 
     <!-- Ana menü -->
     <section id="screen-menu" class="screen active menu" aria-labelledby="menu-title">
-      <button type="button" class="icon-btn sound-btn menu-sound" aria-label="Sesi kapat">🔊</button>
-      <div class="hero" aria-hidden="true">
-        <span class="fcard c1">?</span>
-        <span class="fcard c2">×</span>
-        <span class="fcard c3">?</span>
-      </div>
 
-      <div class="menu-head">
-        <h1 id="menu-title" class="title big">Yedi Kart</h1>
-        <p class="tagline">Şansını çarp, skorunu büyüt.</p>
-      </div>
+      <header class="menu-top">
+        <div class="brand">
+          <span class="brand-mark" aria-hidden="true">7</span>
+          <span class="brand-name">Yedi Kart</span>
+        </div>
+        <button type="button" class="icon-btn sound-btn" aria-label="Sesi kapat">🔊</button>
+      </header>
 
-      <ul class="steps">
-        <li>
-          <span class="badge b-blue" aria-hidden="true">1</span>
-          <div><b>Bir karta dokun</b><small>9 kapalı karttan birini aç</small></div>
-        </li>
-        <li>
-          <span class="badge b-mint" aria-hidden="true">×</span>
-          <div><b>Skorun çarpılır</b><small>1'den başlarsın, 7 tur oynarsın; aynı sayılar combo verir</small></div>
-        </li>
-        <li class="danger">
-          <span class="badge b-red" aria-hidden="true">0</span>
-          <div><b>Sıfıra dikkat!</b><small>0 açılırsa oyun anında biter</small></div>
-        </li>
-      </ul>
+      <div class="hero-panel">
+        <div class="hero" aria-hidden="true">
+          <span class="fcard c1">?</span>
+          <span class="fcard c2">×</span>
+          <span class="fcard c3">?</span>
+        </div>
+        <h1 id="menu-title" class="hero-title">Şansını çarp,<br>skorunu büyüt.</h1>
+        <p class="hero-sub">9 kapalı kart, 7 tur. Her seçim skorunu çarpar; tek bir sıfır her şeyi bitirir.</p>
 
-      <div class="menu-actions">
-        <p id="menu-best" class="best" aria-live="polite"></p>
-        <button type="button" id="btn-play" class="btn primary big">Oyuna Başla</button>
-        <p class="foot">Kartlar her turdan sonra yeniden karışır</p>
+        <div class="menu-actions">
+          <button type="button" id="btn-play" class="btn primary big">Oyuna Başla</button>
+          <p id="menu-best" class="best" aria-live="polite"></p>
+          <p class="foot">Kartlar her turdan sonra yeniden karışır</p>
+        </div>
       </div>
 
       <footer class="site-footer" aria-label="İletişim ve sosyal medya">
-        <span class="label">İletişim</span>
+        <h2 class="section-title">İletişim</h2>
         <a class="contact-mail" href="mailto:yedikartapp@gmail.com">
           <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="3"/><path d="m4 7 8 6 8-6"/></svg>
           <span>yedikartapp@gmail.com</span>

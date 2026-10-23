@@ -58,57 +58,138 @@ body.dark {
 .muted { margin: 0; text-align: center; color: var(--muted); }
 .label { font-size: 0.75rem; font-weight: 700; letter-spacing: 1px; color: var(--muted); text-transform: uppercase; }
 
-/* ---------- Ana menü ---------- */
-.menu { position: relative; gap: 18px; min-height: calc(100dvh - 40px); justify-content: center; }
-.menu-sound { position: absolute; top: 0; right: 0; z-index: 3; }
+/* ---------- Ana menü: tek ekrana sığar, kaydırma yok ---------- */
+body:has(#screen-menu.active) { overflow: hidden; }
 
-.hero {
-  position: relative; height: 140px; margin-top: 4px;
+.menu {
+  --safe-t: max(16px, env(safe-area-inset-top));
+  --safe-b: max(20px, env(safe-area-inset-bottom));
+  gap: clamp(8px, 2dvh, 16px);
+  height: calc(100vh - var(--safe-t) - var(--safe-b));
+  height: calc(100dvh - var(--safe-t) - var(--safe-b));
 }
+
+.menu-top { flex: none; display: flex; align-items: center; justify-content: space-between; }
+.brand { display: flex; align-items: center; gap: 10px; }
+.brand-mark {
+  width: 36px; height: 36px; display: grid; place-items: center; border-radius: 11px;
+  background: linear-gradient(135deg, var(--blue-strong), var(--lilac-strong));
+  color: #fff; font-size: 1.1rem; font-weight: 800;
+  box-shadow: 0 4px 10px rgba(74, 90, 217, 0.28);
+}
+.brand-name { font-size: 1.1rem; font-weight: 800; letter-spacing: -0.2px; }
+
+.hero-panel {
+  flex: 1 1 0; min-height: 0;
+  display: flex; flex-direction: column; align-items: stretch; justify-content: center;
+  gap: clamp(8px, 2dvh, 16px);
+  padding: clamp(12px, 2.6dvh, 24px) 18px; text-align: center; border-radius: 28px;
+  background: linear-gradient(165deg, #e6f2fd 0%, #efeafc 100%);
+  border: 1px solid #dde6f5; box-shadow: var(--shadow);
+}
+.hero-title {
+  margin: 0; font-size: clamp(1.5rem, min(4.4dvh, 9vw), 2.3rem);
+  line-height: 1.1; letter-spacing: -1px;
+}
+.hero-sub { margin: 0 auto; max-width: 30ch; color: var(--muted); font-size: 1rem; line-height: 1.45; }
+
+.hero { --ch: clamp(48px, 12dvh, 100px); position: relative; flex: none; height: calc(var(--ch) * 1.2); }
 .fcard {
   position: absolute; bottom: 0; left: 50%;
-  width: 92px; height: 116px; margin-left: -46px;
-  display: grid; place-items: center; border-radius: 22px;
-  font-size: 2.6rem; font-weight: 800; color: rgba(255, 255, 255, 0.95);
-  background: linear-gradient(135deg, var(--blue), var(--lilac));
-  box-shadow: 0 10px 22px rgba(31, 42, 68, 0.18);
+  width: calc(var(--ch) * 0.8); height: var(--ch); margin-left: calc(var(--ch) * -0.4);
+  display: grid; place-items: center; border-radius: calc(var(--ch) * 0.2);
+  font-size: calc(var(--ch) * 0.23); font-weight: 800; color: rgba(255, 255, 255, 0.95);
+  background: linear-gradient(135deg, var(--blue-strong), #7fb6ee);
+  box-shadow: 0 10px 20px rgba(31, 42, 68, 0.16);
   transform-origin: 50% 120%;
 }
-.fcard.c1 { transform: translateX(-62px) rotate(-14deg); animation: float 4.2s ease-in-out infinite; }
+.fcard.c1 { transform: translateX(calc(var(--ch) * -0.56)) rotate(-12deg); animation: float 4.2s ease-in-out infinite; }
 .fcard.c2 {
-  z-index: 2; background: linear-gradient(135deg, #8fdcbc, var(--blue)); font-size: 3.2rem;
+  z-index: 2; background: linear-gradient(135deg, var(--mint-strong), #7fd1b0); font-size: calc(var(--ch) * 0.28);
   animation: float 4.2s ease-in-out -1.4s infinite;
 }
-.fcard.c3 { transform: translateX(62px) rotate(14deg); animation: float 4.2s ease-in-out -2.8s infinite; }
+.fcard.c3 {
+  background: linear-gradient(135deg, var(--lilac-strong), #b3a1ec);
+  transform: translateX(calc(var(--ch) * 0.56)) rotate(12deg); animation: float 4.2s ease-in-out -2.8s infinite;
+}
 @keyframes float {
   0%, 100% { translate: 0 0; }
-  50% { translate: 0 -8px; }
+  50% { translate: 0 -6px; }
 }
 
-.menu-head { display: flex; flex-direction: column; gap: 6px; align-items: center; }
-.tagline { margin: 0; color: var(--muted); font-size: 1.05rem; text-align: center; }
-
-.steps {
-  list-style: none; margin: 0; padding: 6px 14px;
-  display: flex; flex-direction: column;
-  background: var(--surface); border-radius: 22px; box-shadow: var(--shadow);
-}
-.steps li { display: flex; align-items: center; gap: 14px; padding: 10px 0; }
-.steps li + li { border-top: 1px solid var(--line); }
-.steps b { display: block; font-size: 1rem; }
-.steps small { display: block; margin-top: 2px; color: var(--muted); font-size: 0.85rem; }
-.steps li.danger b { color: var(--neg); }
-
-.badge {
-  flex: none; width: 42px; height: 42px; display: grid; place-items: center;
-  border-radius: 14px; font-size: 1.25rem; font-weight: 800;
-}
-.b-blue { background: var(--blue); color: #1d4f80; }
-.b-mint { background: var(--mint); color: #145a42; }
-.b-red { background: #fbd9d6; color: var(--neg); }
-
-.menu-actions { display: flex; flex-direction: column; gap: 12px; align-items: stretch; }
+.menu-actions { display: flex; flex-direction: column; gap: 10px; align-items: stretch; }
 .foot { margin: 0; text-align: center; color: var(--muted); font-size: 0.85rem; }
+
+.section-title {
+  margin: 0; font-size: 0.78rem; font-weight: 700; letter-spacing: 1px;
+  text-transform: uppercase; color: var(--muted);
+}
+
+/* İletişim ve sosyal medya */
+.site-footer {
+  flex: none;
+  display: flex; flex-direction: column; align-items: center; gap: 6px;
+  padding: 14px 16px 12px;
+  background: var(--surface); border: 1px solid var(--line); border-radius: 22px;
+}
+.contact-mail {
+  display: inline-flex; align-items: center; gap: 8px; min-height: 44px; padding: 0 6px;
+  color: var(--ink); font-weight: 700; font-size: 1rem; text-decoration: none;
+  overflow-wrap: anywhere;
+}
+.contact-mail svg { flex: none; color: var(--blue-strong); }
+.social { list-style: none; margin: 0; padding: 0; width: 100%; display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.social li { min-width: 0; }
+.social-link {
+  display: flex; align-items: center; justify-content: center; gap: 8px; min-height: 44px; padding: 0 10px;
+  border-radius: 999px; border: 2px solid var(--line); background: var(--bg);
+  color: var(--ink); font-weight: 700; font-size: 0.9rem; text-decoration: none;
+  transition: transform 0.08s, border-color 0.2s;
+}
+@media (hover: hover) {
+  .contact-mail:hover span { text-decoration: underline; }
+  .social-link:hover { border-color: var(--blue-strong); }
+}
+.social-link:active { transform: scale(0.96); }
+.contact-mail:focus-visible, .social-link:focus-visible { outline: 3px solid var(--blue-strong); outline-offset: 2px; border-radius: 12px; }
+.social-link:focus-visible { border-radius: 999px; }
+.copyright {
+  width: 100%; margin: 4px 0 0; padding-top: 10px; border-top: 1px solid var(--line);
+  color: var(--muted); font-size: 0.8rem; text-align: center;
+}
+
+/* Kısa ekranlar: önce ikincil metinler gider, böylece menü hep tek ekrana sığar */
+@media (max-height: 720px) { .foot { display: none; } }
+@media (max-height: 640px) {
+  .hero-sub { display: none; }
+  .btn.primary.big { min-height: 54px; font-size: 1.15rem; }
+  .site-footer { padding: 10px 14px 8px; gap: 2px; }
+  .copyright { padding-top: 6px; margin-top: 0; }
+}
+@media (max-width: 360px) {
+  .site-footer { padding-left: 10px; padding-right: 10px; }
+  .social { gap: 8px; }
+  .social-link { gap: 6px; font-size: 0.85rem; }
+}
+@media (max-height: 540px) {
+  .hero { --ch: 50px; }
+  .brand-mark { width: 30px; height: 30px; font-size: 1rem; }
+  .copyright { display: none; }
+  .hero-panel { padding-top: 8px; padding-bottom: 8px; }
+}
+
+/* Yatay telefon: iki sütun (sol: oyuna giriş, sağ: iletişim) */
+@media (orientation: landscape) and (max-height: 520px) {
+  body:has(#screen-menu.active) .app { max-width: 880px; }
+  .menu.active { display: grid; grid-template-columns: 1.25fr 1fr; grid-template-rows: auto minmax(0, 1fr); column-gap: 16px; row-gap: 8px; }
+  .menu-top { grid-column: 1 / -1; }
+  .hero-panel { grid-column: 1; grid-row: 2; }
+  .site-footer { grid-column: 2; grid-row: 2; justify-content: center; align-self: stretch; }
+  .hero-sub, .foot { display: none; }
+  .copyright { display: block; }
+  .hero { --ch: clamp(44px, 14dvh, 70px); }
+  .hero-title { font-size: clamp(1.3rem, 7dvh, 1.9rem); }
+}
 
 /* Butonlar */
 .btn {
@@ -128,31 +209,6 @@ body.dark {
 .btn.ghost { background: transparent; color: var(--ink); border: 2px solid var(--line); }
 .row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
 .row .btn { width: 100%; }
-
-/* ---------- Alt bilgi: iletişim ve sosyal medya (yalnızca ana menü) ---------- */
-.site-footer {
-  display: flex; flex-direction: column; align-items: center; gap: 10px;
-  margin-top: 6px; padding-top: 16px; border-top: 1px solid var(--line);
-}
-.contact-mail {
-  display: inline-flex; align-items: center; gap: 8px; min-height: 44px; padding: 0 6px;
-  color: var(--ink); font-weight: 700; font-size: 0.95rem; text-decoration: none;
-  overflow-wrap: anywhere;
-}
-.contact-mail svg { flex: none; color: var(--blue-strong); }
-.contact-mail:hover span { text-decoration: underline; }
-.social { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; justify-content: center; gap: 10px; }
-.social-link {
-  display: inline-flex; align-items: center; gap: 8px; min-height: 44px; padding: 0 16px;
-  border-radius: 999px; border: 2px solid var(--line); background: var(--surface);
-  color: var(--ink); font-weight: 700; font-size: 0.9rem; text-decoration: none;
-  transition: transform 0.08s, border-color 0.2s;
-}
-.social-link:hover { border-color: var(--blue-strong); }
-.social-link:active { transform: scale(0.96); }
-.contact-mail:focus-visible, .social-link:focus-visible { outline: 3px solid var(--blue-strong); outline-offset: 2px; border-radius: 12px; }
-.social-link:focus-visible { border-radius: 999px; }
-.copyright { margin: 4px 0 0; color: var(--muted); font-size: 0.8rem; text-align: center; }
 
 /* ---------- Oyun ekranı ---------- */
 .game-head { display: flex; align-items: center; justify-content: space-between; }
@@ -404,12 +460,7 @@ body.dark {
 @media (max-width: 340px) {
   .grid { gap: 8px; }
   .score { font-size: 2.3rem; }
-  .title.big { font-size: 2.3rem; }
   .go-zero { font-size: 7.5rem; }
-}
-@media (max-height: 640px) {
-  .hero { height: 110px; }
-  .fcard { width: 76px; height: 96px; margin-left: -38px; }
 }
 /* Işık ve hareket hassasiyeti: flaş, sarsıntı ve çevirme/ölçekleme hareketleri kapanır.
    Geri bildirim (renkler, metin, ses) olduğu gibi kalır. */
