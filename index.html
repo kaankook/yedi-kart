@@ -6,8 +6,16 @@
   <meta name="theme-color" content="#fbf8f2">
   <title>Yedi Kart</title>
   <link rel="stylesheet" href="style.css">
+  <noscript><style>.app { display: none; }</style></noscript>
 </head>
 <body>
+  <noscript>
+    <div class="noscript" role="alert">
+      <h1>Yedi Kart</h1>
+      <p>Oyunu oynamak için JavaScript gerekiyor. Tarayıcı ayarlarından JavaScript'i açıp sayfayı yenile.</p>
+    </div>
+  </noscript>
+
   <div id="flash" class="flash" aria-hidden="true"></div>
 
   <main class="app">
@@ -62,6 +70,8 @@
         <span class="label">SKOR</span>
         <span id="score" class="score" aria-live="polite">1</span>
       </div>
+
+      <div id="combo-banner" class="combo-banner" aria-live="polite"></div>
 
       <div id="grid" class="grid" role="group" aria-label="Kartlar"></div>
 
@@ -134,6 +144,8 @@
     </form>
   </dialog>
 
-  <script src="script.js"></script>
+  <script src="game.js"></script>
+  <script src="audio.js"></script>
+  <script src="ui.js"></script>
 </body>
 </html>

@@ -2,7 +2,7 @@
   --bg: #fbf8f2;
   --surface: #ffffff;
   --ink: #1f2a44;
-  --muted: #6b7690;
+  --muted: #55607a;         /* küçük gri yazılar; krem zeminde ~5,9:1, beyazda ~6,3:1 (WCAG AA) */
   --blue: #a9d3f5;
   --blue-strong: #4a90d9;
   --mint: #bfe9d6;
@@ -13,7 +13,7 @@
   --line: #e8e3d8;
   --shadow: 0 6px 16px rgba(31, 42, 68, 0.10);
   --radius: 18px;
-  --flip: 380ms;            /* kart çevirme süresi (script.js'teki FLIP_MS bunu ezer) */
+  --flip: 380ms;            /* kart çevirme süresi (ui.js'teki FLIP_MS bunu ezer) */
 }
 
 * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
@@ -40,6 +40,14 @@ body.dark {
 }
 
 .app { width: 100%; max-width: 420px; margin: 0 auto; }
+
+/* JavaScript kapalıyken görünen mesaj (index.html'deki <noscript>) */
+.noscript {
+  max-width: 420px; margin: 18vh auto 0; padding: 26px 22px; text-align: center;
+  background: var(--surface); border-radius: 22px; box-shadow: var(--shadow);
+}
+.noscript h1 { margin: 0 0 10px; font-size: 1.8rem; letter-spacing: -0.5px; }
+.noscript p { margin: 0; font-size: 1.05rem; line-height: 1.5; }
 
 .screen { display: none; flex-direction: column; gap: 16px; }
 .screen.active { display: flex; }
@@ -293,10 +301,6 @@ body.dark {
 .picked-item.neg { color: var(--neg); border-color: var(--neg); }
 .picked-arrow { color: var(--muted); }
 
-/* index.html'de İşlemler bloğu duruyorsa bile tamamen gizle */
-#history-list,
-.picked:has(#history-list) { display: none !important; }
-
 /* ---------- Game over ---------- */
 .gameover { align-items: center; text-align: center; gap: 14px; min-height: calc(100dvh - 40px); justify-content: center; }
 .gameover > * { animation: rise 0.45s ease both; }
@@ -382,11 +386,43 @@ body.dark {
   .hero { height: 110px; }
   .fcard { width: 76px; height: 96px; margin-left: -38px; }
 }
+/* Işık ve hareket hassasiyeti: flaş, sarsıntı ve çevirme/ölçekleme hareketleri kapanır.
+   Geri bildirim (renkler, metin, ses) olduğu gibi kalır. */
 @media (prefers-reduced-motion: reduce) {
-  .confirm[open]::backdrop { animation: none; }
+  /* Işık: kırmızı flaş hiç gösterilmez */
+  .flash, .flash.on { display: none; animation: none; }
+
+  /* Sarsıntı */
   .screen.shake { animation: none; }
+
+  /* Kart çevirme: 3B dönüş yok, kart anında açılır/kapanır; yeniden karıştırma dalgası yok */
+  .card { transition: opacity 0.15s ease; }
+  .card-inner { transition: none; }
+  .card.closing { animation: none; transition-delay: 0s; }
+  .card.closing .card-inner { transition-delay: 0s; }
+  .card:not(.revealed):not(.peek):not(.closing):active .card-inner { transform: none; }
+
+  /* Skor, tur ve düğme vurguları */
+  .pill.bump, .score.bump { animation: none; }
+  .btn, .icon-btn { transition: none; }
+  .btn:active:not(:disabled), .icon-btn:active { transform: none; }
+  body { transition: none; }
   .fcard { animation: none; }
-  .go-zero { animation: rise 0.45s ease both; }
+
+  /* Combo: zıplamak yerine yalnızca belirir ve söner */
+  .combo-banner { transform: none; }
+  .combo-banner.show { animation: combo-fade 1.35s ease-out both; }
+  @keyframes combo-fade {
+    0% { opacity: 0; }
+    15%, 70% { opacity: 1; }
+    100% { opacity: 0; }
+  }
+
+  /* Game over: büyüme/kayma yok, öğeler yumuşakça belirir; yanıp sönen parıltılar sabit */
+  .gameover > *, .go-zero { animation: fade-in 0.3s ease both; }
   .go-zero::after { animation: none; }
-  .card.closing { animation: none; }
+  .card.doom .face.front::after { animation: none; opacity: 1; }
+
+  /* Onay kutusu */
+  .confirm[open], .confirm[open]::backdrop { animation: none; }
 }
