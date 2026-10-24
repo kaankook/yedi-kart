@@ -16,6 +16,7 @@
   --shadow: 0 6px 16px rgba(31, 42, 68, 0.10);
   --radius: 18px;
   --flip: 380ms;            /* kart çevirme süresi (FLIP_MS bunu ezer) */
+  --phi: 1.618;             /* altın oran: hero panel aralıkları bununla ölçeklenir */
 
   /* Giriş animasyonu ölçüleri (intro.css ve howto.css birlikte kullanır) */
   --enter-ease: cubic-bezier(0.22, 1, 0.36, 1);   /* easeOutQuint: hızlı başlar, yumuşak oturur */

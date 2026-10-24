@@ -26,24 +26,42 @@
 }
 .brand-name { font-size: 1.1rem; font-weight: 800; letter-spacing: -0.2px; }
 
+/* Hero panel: altın oran (φ ≈ 1,618).
+   İki bölge: üst (kartlar + başlık) : alt (açıklama + düğmeler) = 1,618 : 1 → ≈ %61,8 / %38,2.
+   Alt bölge içeriğinden küçük olamaz (minmax(min-content, …)); kısa ekranlarda oran yumuşakça bozulur,
+   hiçbir şey kırpılmaz. Aralıklar da aynı oranla ölçeklenir: --gap × φ. */
 .hero-panel {
+  --gap: clamp(10px, 2.2dvh, 20px);
   flex: 1 1 0; min-height: 0;
-  display: flex; flex-direction: column; align-items: stretch; justify-content: center;
-  gap: clamp(12px, 3dvh, 30px);
-  padding: clamp(14px, 3dvh, 28px) 20px; text-align: center; border-radius: 28px;
+  display: grid; grid-template-rows: minmax(0, 1.618fr) minmax(min-content, 1fr);
+  padding: clamp(18px, 3.4dvh, 30px) clamp(18px, 6vw, 28px); text-align: center; border-radius: 28px;
   background: linear-gradient(165deg, #e6f2fd 0%, #efeafc 100%);
   border: 1px solid #dde6f5; box-shadow: var(--shadow);
 }
 
-/* Başlık + açıklama: tek blok, sıkı ve dengeli aralık */
-.hero-copy { display: flex; flex-direction: column; align-items: center; gap: 10px; }
-.hero-title {
-  margin: 0; font-size: clamp(1.55rem, min(4.8dvh, 9vw), 2.5rem); font-weight: 800;
-  line-height: 1.12; letter-spacing: -0.02em; text-wrap: balance;
+.hero-zone {
+  min-height: 0; display: flex; flex-direction: column; align-items: center; justify-content: center;
+  gap: calc(var(--gap) * var(--phi));
 }
+.hero-zone > * { max-width: 100%; }
+
+/* Başlık: koyu lacivert + ikinci satırda marka renk geçişi (büyük metin, kontrast ≥ 3:1) */
+.hero-title {
+  margin: 0; font-size: clamp(1.7rem, min(5.2dvh, 9.5vw), 2.6rem); font-weight: 800;
+  line-height: 1.1; letter-spacing: -0.025em; color: var(--ink); text-wrap: balance;
+}
+.hero-title .accent {
+  display: block;
+  color: var(--lilac-strong);   /* gradient desteklenmezse düz renk */
+  background: linear-gradient(100deg, var(--blue-strong), var(--lilac-strong));
+  -webkit-background-clip: text; background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+/* Açıklama: başlıktan belirgin biçimde küçük ve sakin; satır uzunluğu okunur aralıkta */
 .hero-sub {
-  margin: 0; max-width: 34ch; color: var(--muted);
-  font-size: 0.98rem; line-height: 1.5; text-wrap: balance;
+  margin: 0; max-width: 30ch; color: var(--muted);
+  font-size: clamp(0.92rem, 2.2dvh, 1rem); line-height: 1.55; text-wrap: balance;
 }
 
 /* Kart görseli: üç kart simetrik, ölçüler --ch'den türer */
@@ -71,14 +89,21 @@
   50% { translate: 0 -6px; }
 }
 
-/* Düğme + alt not: aynı genişlik ve ritim */
-.menu-actions { display: flex; flex-direction: column; gap: 10px; align-items: stretch; }
-.menu-actions .btn.primary.big { min-height: 58px; font-size: 1.15rem; border-radius: 18px; letter-spacing: 0.01em; }
+/* Düğmeler + alt not: başlık ve açıklamayla aynı ortalanmış sütunda */
+.menu-actions {
+  width: min(100%, 340px);
+  display: flex; flex-direction: column; gap: calc(var(--gap) * 0.8); align-items: stretch;
+}
 
-/* Oyuna Başla + Nasıl Oynanır yan yana; dar ekranda alt alta */
-.play-row { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 10px; }
-.play-row .btn { white-space: nowrap; }
-.play-row .btn.primary.big { padding: 0 12px; }
+/* Oyuna Başla + Nasıl Oynanır: eş genişlik, eş yükseklik, eş yazı, yan yana; çok dar ekranda alt alta.
+   Tek fark renk: biri dolu (ana eylem), biri beyaz (ikincil). */
+.play-row { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
+.menu-actions .play-row .btn {
+  min-height: 56px; padding: 0 12px; border-radius: 18px;
+  font-size: 1.05rem; font-weight: 700; letter-spacing: 0; white-space: nowrap;
+}
+.menu-actions .play-row .btn.primary { box-shadow: 0 6px 16px rgba(74, 90, 217, 0.30); }
+.menu-actions .play-row .btn.light { box-shadow: 0 6px 16px rgba(31, 42, 68, 0.08), inset 0 0 0 1.5px #d6def0; }
 @media (max-width: 350px) { .play-row { grid-template-columns: 1fr; } }
 .foot { margin: 0; text-align: center; color: var(--muted); font-size: 0.82rem; line-height: 1.3; }
 .menu-actions:has(.best:not(:empty)) .foot { display: none; }
@@ -123,7 +148,7 @@
 @media (max-height: 720px) { .foot { display: none; } }
 @media (max-height: 640px) {
   .hero-sub { display: none; }
-  .menu-actions .btn.primary.big { min-height: 52px; font-size: 1.1rem; }
+  .menu-actions .play-row .btn { min-height: 52px; }
 }
 @media (max-height: 540px) {
   .hero { --ch: 50px; }
@@ -143,7 +168,7 @@
   .copyright { display: block; }
   .hero { --ch: clamp(44px, 14dvh, 70px); }
   .hero-title { font-size: clamp(1.3rem, 7dvh, 1.9rem); }
-  .hero-copy { gap: 0; }
+  .hero-zone { gap: calc(var(--gap) * 0.5); }
 }
 
 /* ======================================================================
