@@ -1,25 +1,55 @@
-/* base.css — tasarım değişkenleri, reset, body, .app, tipografi, ekran iskeleti */
+/* base.css — tasarım değişkenleri, reset, body, .app, tipografi, ekran iskeleti
+   Renk ve font kararları yalnızca burada verilir; diğer dosyalar bu değişkenleri kullanır. */
 
 :root {
-  --bg: #fbf8f2;
+  /* ---------- Yazı tipi ----------
+     Tek kaynak: burası. Dosyalar css/fonts.css'te tanımlı.
+     Inter, Suisse Int'l ile aynı ailedendir (nötr grotesk); Türkçe karakterleri (ğ ş İ ı) tam destekler.
+     "Inter Fallback": Inter yüklenene kadar Arial'i Inter ölçülerine uydurur, sayfa kaymaz.
+     Sıradaki fontlar da grotesk: Helvetica Neue / Helvetica / Arial. */
+  --font-sans: "Inter", "Inter Fallback", "Helvetica Neue", Helvetica, Arial, system-ui, sans-serif;
+
+  /* ---------- Zemin ve metin ---------- */
+  --bg: #f4f6fb;            /* ana zemin */
   --surface: #ffffff;
   --ink: #1f2a44;
-  --muted: #55607a;         /* küçük gri yazılar; krem zeminde ~5,9:1, beyazda ~6,3:1 (WCAG AA) */
-  --blue: #a9d3f5;
-  --blue-strong: #4a90d9;
-  --mint: #bfe9d6;
-  --mint-strong: #2f9e75;
-  --lilac: #d8cdf7;
+  --muted: #55607a;         /* küçük gri yazılar; #F4F6FB zeminde ~5,8:1, beyazda ~6,3:1 (WCAG AA) */
+  --line: #dfe5f1;          /* ince çerçeveler (zeminle aynı soğuk mavi ailesi) */
+  --line-strong: #cdd6ea;
+
+  /* ---------- Vurgu renkleri: ana / açık uç (gradyan sonu) ---------- */
+  --blue: #b2d1f7;
+  --blue-strong: #3b73d6;   /* beyaz yazıyla ~4,6:1 */
+  --blue-lite: #86b0ef;
+  --mint: #c2ead9;
+  --mint-strong: #258f69;
+  --mint-lite: #7fd1b0;
+  --lilac: #dcd4f8;
   --lilac-strong: #7b5fd0;
+  --lilac-lite: #b3a1ec;
   --neg: #d9534f;
-  --line: #e8e3d8;
-  --shadow: 0 6px 16px rgba(31, 42, 68, 0.10);
+  --neg-lite: #ef8a86;
+
+  /* ---------- Açık tonlar (panel, rozet, kart zemini) ---------- */
+  --tint-blue: #e4ecfb;
+  --tint-mint: #e1f4ec;
+  --tint-lilac: #ece8fc;
+  --tint-neg: #fdf0ef;
+
+  /* ---------- Açık tonların üstündeki koyu yazı renkleri ---------- */
+  --blue-ink: #274f9e;
+  --mint-ink: #14583f;
+  --lilac-ink: #3d2c85;
+  --neg-ink: #b4332f;
+
+  --shadow: 0 6px 16px rgba(35, 52, 99, 0.09);
   --radius: 18px;
   --flip: 380ms;            /* kart çevirme süresi (FLIP_MS bunu ezer) */
   --phi: 1.618;             /* altın oran: hero panel aralıkları bununla ölçeklenir */
 
-  /* Giriş animasyonu ölçüleri (intro.css ve howto.css birlikte kullanır) */
-  --enter-ease: cubic-bezier(0.22, 1, 0.36, 1);   /* easeOutQuint: hızlı başlar, yumuşak oturur */
+  /* ---------- Hareket ölçüleri (intro.css, howto.css ve hover efektleri birlikte kullanır) ---------- */
+  --ease-out: cubic-bezier(0.22, 1, 0.36, 1);     /* easeOutQuint: hızlı başlar, yumuşak oturur */
+  --enter-ease: var(--ease-out);
   --enter-dur: 640ms;
   --enter-y: 14px;
   --enter-base: 60ms;
@@ -29,13 +59,16 @@
 }
 
 * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
-button { touch-action: manipulation; }
+button { touch-action: manipulation; font: inherit; color: inherit; }
 
 html, body {
   margin: 0;
   background: var(--bg);
   color: var(--ink);
-  font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  font-family: var(--font-sans);
+  font-optical-sizing: auto;
+  font-synthesis: none;
+  -webkit-font-smoothing: antialiased;
   -webkit-text-size-adjust: 100%;
 }
 

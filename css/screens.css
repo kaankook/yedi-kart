@@ -12,19 +12,8 @@
   height: calc(100dvh - var(--safe-t) - var(--safe-b));
 }
 
-.menu > :not(.site-footer) {
-  font-family: "Suisse Intl S Alt", -apple-system, Inter, system-ui, sans-serif;
-}
-
 .menu-top { flex: none; display: flex; align-items: center; justify-content: space-between; }
-.brand { display: flex; align-items: center; gap: 10px; }
-.brand-mark {
-  width: 36px; height: 36px; display: grid; place-items: center; border-radius: 11px;
-  background: linear-gradient(135deg, var(--blue-strong), var(--lilac-strong));
-  color: #fff; font-size: 1.1rem; font-weight: 800;
-  box-shadow: 0 4px 10px rgba(74, 90, 217, 0.28);
-}
-.brand-name { font-size: 1.1rem; font-weight: 800; letter-spacing: -0.2px; }
+.brand { display: flex; align-items: center; gap: 10px; }   /* .brand-mark / .brand-name: components.css */
 
 /* Hero panel: altın oran (φ ≈ 1,618).
    İki bölge: üst (kartlar + başlık) : alt (açıklama + düğmeler) = 1,618 : 1 → ≈ %61,8 / %38,2.
@@ -35,8 +24,8 @@
   flex: 1 1 0; min-height: 0;
   display: grid; grid-template-rows: minmax(0, 1.618fr) minmax(min-content, 1fr);
   padding: clamp(18px, 3.4dvh, 30px) clamp(18px, 6vw, 28px); text-align: center; border-radius: 28px;
-  background: linear-gradient(165deg, #e6f2fd 0%, #efeafc 100%);
-  border: 1px solid #dde6f5; box-shadow: var(--shadow);
+  background: linear-gradient(165deg, var(--tint-blue) 0%, var(--tint-lilac) 100%);
+  border: 1px solid var(--line); box-shadow: var(--shadow);
 }
 
 .hero-zone {
@@ -71,17 +60,17 @@
   width: calc(var(--ch) * 0.8); height: var(--ch); margin-left: calc(var(--ch) * -0.4);
   display: grid; place-items: center; border-radius: calc(var(--ch) * 0.2);
   font-size: calc(var(--ch) * 0.34); font-weight: 800; line-height: 1; color: rgba(255, 255, 255, 0.95);
-  background: linear-gradient(135deg, var(--blue-strong), #7fb6ee);
+  background: linear-gradient(135deg, var(--blue-strong), var(--blue-lite));
   box-shadow: 0 10px 20px rgba(31, 42, 68, 0.16);
   transform-origin: 50% 120%;
 }
 .fcard.c1 { transform: translateX(calc(var(--ch) * -0.56)) rotate(-12deg); animation: float 4.2s ease-in-out infinite; }
 .fcard.c2 {
-  z-index: 2; background: linear-gradient(135deg, var(--mint-strong), #7fd1b0); font-size: calc(var(--ch) * 0.42);
+  z-index: 2; background: linear-gradient(135deg, var(--mint-strong), var(--mint-lite)); font-size: calc(var(--ch) * 0.42);
   animation: float 4.2s ease-in-out -1.4s infinite;
 }
 .fcard.c3 {
-  background: linear-gradient(135deg, var(--lilac-strong), #b3a1ec);
+  background: linear-gradient(135deg, var(--lilac-strong), var(--lilac-lite));
   transform: translateX(calc(var(--ch) * 0.56)) rotate(12deg); animation: float 4.2s ease-in-out -2.8s infinite;
 }
 @keyframes float {
@@ -102,12 +91,58 @@
   min-height: 56px; padding: 0 12px; border-radius: 18px;
   font-size: 1.05rem; font-weight: 700; letter-spacing: 0; white-space: nowrap;
 }
-.menu-actions .play-row .btn.primary { box-shadow: 0 6px 16px rgba(74, 90, 217, 0.30); }
-.menu-actions .play-row .btn.light { box-shadow: 0 6px 16px rgba(31, 42, 68, 0.08), inset 0 0 0 1.5px #d6def0; }
+.menu-actions .play-row .btn.primary { box-shadow: 0 6px 16px rgba(59, 115, 214, 0.30); }
+.menu-actions .play-row .btn.light { box-shadow: 0 6px 16px rgba(35, 52, 99, 0.08), inset 0 0 0 1.5px var(--line-strong); }
 @media (max-width: 350px) { .play-row { grid-template-columns: 1fr; } }
 .foot { margin: 0; text-align: center; color: var(--muted); font-size: 0.82rem; line-height: 1.3; }
 .menu-actions:has(.best:not(:empty)) .foot { display: none; }
 .menu-actions .best { font-size: 0.88rem; padding: 7px 14px; }
+
+/* ---------- Ana sayfa hover etkileri ----------
+   Yalnızca imleçli cihazlarda çalışır (dokunmatikte "yapışan hover" kalmaz).
+   Konum/ölçek/dönüş için bağımsız translate, scale ve rotate özellikleri kullanılır:
+   transform ile (float, enter animasyonları, :active ölçeği) çakışmaz.
+   Azaltılmış hareket kapatmaları motion.css'te. */
+@media (hover: hover) and (pointer: fine) {
+
+  /* Düğmeler: hafif yükselme + gölge derinleşmesi; basınca yerine oturur */
+  .menu .btn {
+    transition: translate 0.28s var(--ease-out), box-shadow 0.28s var(--ease-out), color 0.2s,
+                transform 0.08s, filter 0.15s, background 0.2s, opacity 0.2s;
+  }
+  .menu .btn:hover { translate: 0 -2px; filter: none; }
+  .menu .btn:active:not(:disabled) { translate: 0 0; }
+  .menu-actions .play-row .btn.primary:hover { box-shadow: 0 12px 26px rgba(59, 115, 214, 0.42); }
+  .menu-actions .play-row .btn.light:hover {
+    color: var(--blue-ink);
+    box-shadow: 0 10px 22px rgba(35, 52, 99, 0.12), inset 0 0 0 1.5px var(--blue-strong);
+  }
+
+  /* Ana düğme: üzerinden geçen ince ışık süpürmesi (metnin altında, zeminin üstünde) */
+  .menu .btn.primary { position: relative; overflow: hidden; isolation: isolate; }
+  .menu .btn.primary::before {
+    content: ""; position: absolute; inset: 0; z-index: -1; pointer-events: none;
+    background: linear-gradient(105deg, transparent 35%, rgb(255 255 255 / 0.3) 50%, transparent 65%);
+    translate: -110% 0; transition: translate 0.7s var(--ease-out);
+  }
+  .menu .btn.primary:hover::before { translate: 110% 0; }
+
+  /* Hero kartları: üst bölgeye gelince yelpaze açılır, ortadaki kart büyür */
+  .fcard {
+    transition: rotate 0.5s var(--ease-out), scale 0.5s var(--ease-out), box-shadow 0.5s var(--ease-out);
+  }
+  .hero-zone--top:hover .fcard.c1 { rotate: -6deg; }
+  .hero-zone--top:hover .fcard.c3 { rotate: 6deg; }
+  .hero-zone--top:hover .fcard.c2 { scale: 1.07; box-shadow: 0 16px 28px rgba(35, 52, 99, 0.2); }
+
+  /* Ses düğmesi: arkasında yumuşak daire belirir */
+  .menu .icon-btn::before {
+    content: ""; position: absolute; inset: 0; z-index: -1; border-radius: 50%;
+    background: var(--tint-blue); opacity: 0; scale: 0.6;
+    transition: opacity 0.2s, scale 0.3s var(--ease-out);
+  }
+  .menu .icon-btn:hover::before { opacity: 1; scale: 1; }
+}
 
 .section-title {
   margin: 0; font-size: 0.78rem; font-weight: 700; letter-spacing: 1px;
@@ -115,14 +150,12 @@
 }
 
 /* ---------- Footer ----------
-   dialed.gg ile aynı ölçüler (10.5px, #00000047, -.1px, 18px boşluk).
-   Not: "Suisse Intl S Alt" lisanslı bir font; sitede yüklü değilse sıradaki yedek font kullanılır. */
+   Ölçüler: 10.5px, -.1px, 18px boşluk. Renkler zemine uyumlu: --ink'in saydam tonları. */
 .site-footer {
-  --ft-dim: #00000047;        /* yazı rengi */
-  --ft-dim2: #00000057;       /* marka adı: bir ton koyu */
-  --ft-hover: #0000008c;
+  --ft-dim: rgb(31 42 68 / 0.62);    /* yazı rengi */
+  --ft-dim2: rgb(31 42 68 / 0.74);   /* marka adı: bir ton koyu */
+  --ft-hover: var(--ink);
   flex: none; display: flex; flex-direction: column; align-items: flex-start; gap: 0; padding: 0 0 2px;
-  font-family: "Suisse Intl S Alt", -apple-system, Inter, system-ui, sans-serif;
   font-size: 10.5px; letter-spacing: -0.1px; color: var(--ft-dim);
   -webkit-font-smoothing: antialiased;
 }
@@ -137,10 +170,19 @@
 }
 .ft-links { display: flex; align-items: center; flex-wrap: wrap; gap: 6px; }          /* 6 + 6 + 6 = 18px */
 .ft-links a {
-  display: inline-flex; align-items: center; min-height: 36px; padding: 0 6px;
+  position: relative; display: inline-flex; align-items: center; min-height: 36px; padding: 0 6px;
   color: inherit; font-weight: 500; text-decoration: none; transition: color 0.2s;
 }
-@media (hover: hover) { .ft-links a:hover { color: var(--ft-hover); } }
+/* Hover: renk koyulaşır, altında ince çizgi soldan sağa uzar */
+.ft-links a::after {
+  content: ""; position: absolute; left: 6px; right: 6px; bottom: 9px; height: 1px;
+  background: currentColor; scale: 0 1; transform-origin: left center;
+  transition: scale 0.3s var(--ease-out);
+}
+@media (hover: hover) {
+  .ft-links a:hover { color: var(--ft-hover); }
+  .ft-links a:hover::after { scale: 1 1; }
+}
 .ft-links a:focus-visible { outline: 3px solid var(--blue-strong); outline-offset: 2px; border-radius: 8px; }
 .copyright { margin: -2px 0 0; color: inherit; font-size: inherit; line-height: 1.4; }
 
@@ -231,9 +273,9 @@
 .card.revealed, .card.peek { cursor: default; }
 
 /* Renk sınıfları (.picked, .neg, .zero) kapanış dönüşü bitene kadar korunduğu için renk sıçraması olmaz */
-.card.picked .face.front { border-color: var(--mint-strong); background: #f3fbf7; }
+.card.picked .face.front { border-color: var(--mint-strong); background: var(--tint-mint); }
 .card.neg .face.front,
-.card.zero .face.front { border-color: var(--neg); background: #fdf3f2; color: var(--neg); }
+.card.zero .face.front { border-color: var(--neg); background: var(--tint-neg); color: var(--neg); }
 
 /* FOMO Etkisi: seçilmeyen diğer 8 kartın yarı saydam açılışı */
 .card.peek {

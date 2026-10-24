@@ -4,19 +4,11 @@
 .page {
   max-width: 640px; margin: 0 auto;
   display: flex; flex-direction: column; gap: 20px;
-  font-family: "Suisse Intl S Alt", -apple-system, Inter, system-ui, sans-serif;
 }
 
-/* Üst çubuk: marka + geri dön */
+/* Üst çubuk: marka (.brand-mark/.brand-name components.css'te) + geri dön */
 .page-top { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
 .page-top .brand-link { display: flex; align-items: center; gap: 10px; color: inherit; text-decoration: none; }
-.brand-mark {
-  width: 36px; height: 36px; display: grid; place-items: center; border-radius: 11px;
-  background: linear-gradient(135deg, var(--blue-strong), var(--lilac-strong));
-  color: #fff; font-size: 1.1rem; font-weight: 800;
-  box-shadow: 0 4px 10px rgba(74, 90, 217, 0.28);
-}
-.brand-name { font-size: 1.1rem; font-weight: 800; letter-spacing: -0.2px; }
 .back-link {
   display: inline-flex; align-items: center; gap: 6px; min-height: 44px; padding: 0 14px;
   border-radius: 14px; background: var(--surface); color: var(--ink);
@@ -56,9 +48,9 @@
 /* Özet kutusu */
 .callout {
   margin-top: 22px; padding: 18px 20px; border-radius: 20px;
-  background: #e3f6ee; color: #145a42;
+  background: var(--tint-mint); color: var(--mint-ink);
 }
-.callout h2 { margin: 0 0 8px; font-size: 1rem; color: #145a42; }
+.callout h2 { margin: 0 0 8px; font-size: 1rem; color: var(--mint-ink); }
 .callout ul { list-style: none; margin: 0; padding: 0; }
 .callout li { position: relative; margin: 6px 0 0; padding-left: 26px; font-weight: 600; }
 .callout li::before {
@@ -76,8 +68,8 @@
 .data-list .data-desc { display: block; margin-top: 2px; color: var(--muted); font-size: 0.93rem; line-height: 1.5; }
 .data-list .tag {
   display: inline-block; margin-top: 8px; padding: 3px 10px; border-radius: 999px;
-  background: var(--lilac); color: #3d2c85; font-size: 0.75rem; font-weight: 800; letter-spacing: 0.02em;
+  background: var(--lilac); color: var(--lilac-ink); font-size: 0.75rem; font-weight: 800; letter-spacing: 0.02em;
 }
 
-.page-foot { padding: 4px 4px 8px; color: #00000057; font-size: 12px; line-height: 1.5; }
+.page-foot { padding: 4px 4px 8px; color: rgb(31 42 68 / 0.62); font-size: 12px; line-height: 1.5; }
 .page-foot a { color: inherit; }

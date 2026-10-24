@@ -32,7 +32,7 @@ export function showScreen(name) {
   $$('.screen').forEach((el) => el.classList.toggle('active', el.id === `screen-${name}`));
   document.body.classList.toggle('dark', name === 'gameover');
   const meta = document.querySelector('meta[name="theme-color"]');
-  if (meta) meta.setAttribute('content', name === 'gameover' ? '#1a0b12' : '#fbf8f2');
+  if (meta) meta.setAttribute('content', name === 'gameover' ? '#1a0b12' : '#f4f6fb');
   window.scrollTo(0, 0);
 }
 

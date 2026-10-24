@@ -25,8 +25,8 @@
 .hero-sub { --i: 5; }
 .menu-actions .btn { --i: 6; }
 .menu-actions .best, .menu-actions .foot { --i: 7; }
-.site-footer { --i: 10; }
-.intro .site-footer { animation-duration: var(--enter-dur-slow); }   /* 60 + 10×60 ≈ 640ms gecikme */
+.site-footer { --d: 640ms; }   /* dialed.gg: gecikme .64s */
+.intro .site-footer { animation-duration: var(--enter-dur-slow); }   /* 820ms = .82s */
 
 /* Oyun (sayfa yenilendiğinde oyun sürüyorsa) */
 .game-head { --i: 0; }

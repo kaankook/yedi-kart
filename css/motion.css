@@ -31,6 +31,16 @@
   body { transition: none; }
   .fcard { animation: none; }
 
+  /* Ana sayfa hover: yükselme, ışık süpürmesi, kart yelpazesi ve çizgi animasyonu kapanır;
+     renk ve gölge geri bildirimi kalır */
+  .menu .btn { transition: none; }
+  .menu .btn:hover { translate: none; }
+  .menu .btn.primary::before { display: none; }
+  .fcard { transition: none; }
+  .hero-zone--top:hover :is(.fcard.c1, .fcard.c2, .fcard.c3) { rotate: none; scale: none; }
+  .menu .icon-btn::before { transition: none; scale: 1; }
+  .ft-links a::after { transition: none; }
+
   /* Combo: zıplamak yerine yalnızca belirir ve söner */
   .combo-banner { transform: none; }
   .combo-banner.show { animation: combo-fade 1.35s ease-out both; }

@@ -3,13 +3,16 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-  <meta name="theme-color" content="#fbf8f2">
+  <meta name="theme-color" content="#f4f6fb">
   <title>Yedi Kart</title>
 
-  <!-- assets/ içindeki dosya adlarını kendi dosyalarına göre düzenle -->
+  <!-- Font dosyası: Inter (ücretsiz). InterVariable.woff2'yi assets/fonts/ içine koy (bkz. css/fonts.css) -->
   <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
 
-  <!-- CSS yükleme sırası önemli: temel → parçalar → ekranlar → diyalog → giriş → hareket (en son) -->
+  <link rel="preload" href="assets/fonts/InterVariable.woff2" as="font" type="font/woff2" crossorigin>
+
+  <!-- CSS yükleme sırası önemli: yazı tipleri → temel → parçalar → ekranlar → diyalog → giriş → hareket (en son) -->
+  <link rel="stylesheet" href="css/fonts.css">
   <link rel="stylesheet" href="css/base.css">
   <link rel="stylesheet" href="css/components.css">
   <link rel="stylesheet" href="css/screens.css">

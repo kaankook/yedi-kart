@@ -1,5 +1,5 @@
 /* components.css — ekranlar arasında paylaşılan parçalar:
-   .btn, .row, .icon-btn, .pill, .score-card, .best, .confirm (dialog) */
+   .btn, .row, .brand-mark, .icon-btn, .pill, .score-card, .best, .confirm (dialog) */
 
 /* ---------- Butonlar ---------- */
 .btn {
@@ -9,13 +9,14 @@
 }
 .btn:active:not(:disabled) { transform: scale(0.97); }
 .btn:disabled { cursor: default; opacity: 0.5; }
+.btn:focus-visible { outline: 3px solid var(--blue-strong); outline-offset: 3px; }
 .btn.primary { background: var(--blue-strong); color: #fff; }
 .btn.primary.big {
   min-height: 62px; font-size: 1.25rem; border-radius: 20px;
-  background: linear-gradient(135deg, #4a90d9, #7b5fd0);
-  box-shadow: 0 10px 22px rgba(74, 90, 217, 0.35);
+  background: linear-gradient(135deg, var(--blue-strong), var(--lilac-strong));
+  box-shadow: 0 10px 22px rgba(59, 115, 214, 0.34);
 }
-.btn.secondary { background: var(--mint); color: #145a42; }
+.btn.secondary { background: var(--mint); color: var(--mint-ink); }
 .btn.ghost { background: transparent; color: var(--ink); border: 2px solid var(--line); }
 .btn.light {
   padding: 0 16px; font-size: 1rem; border-radius: 18px;
@@ -29,10 +30,19 @@
 .row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
 .row .btn { width: 100%; }
 
+/* ---------- Marka (ana menü ve içerik sayfaları ortak kullanır) ---------- */
+.brand-mark {
+  width: 36px; height: 36px; display: grid; place-items: center; border-radius: 11px;
+  background: linear-gradient(135deg, var(--blue-strong), var(--lilac-strong));
+  color: #fff; font-size: 1.1rem; font-weight: 800;
+  box-shadow: 0 4px 10px rgba(59, 115, 214, 0.28);
+}
+.brand-name { font-size: 1.1rem; font-weight: 800; letter-spacing: -0.2px; }
+
 /* ---------- İkon düğmesi ----------
    Ses düğmesi: çerçevesiz, arka plansız; yalnızca ikon (dialed.gg ölçüleri) */
 .icon-btn {
-  --dim: #0000008c;
+  --dim: rgb(31 42 68 / 0.55);
   position: relative; z-index: 1;
   width: 32px; height: 32px; margin: 0 -6px; padding: 0;
   display: grid; place-items: center;
@@ -47,7 +57,7 @@
 /* ---------- Tur rozeti ---------- */
 .pill {
   padding: 8px 14px; border-radius: 999px; background: var(--lilac);
-  color: #3d2c85; font-weight: 800; font-size: 0.95rem;
+  color: var(--lilac-ink); font-weight: 800; font-size: 0.95rem;
   font-variant-numeric: tabular-nums;
 }
 .pill.bump { animation: bump 0.3s ease; }
@@ -75,7 +85,7 @@
 /* ---------- Rekor rozeti (menü, sonuç, game over) ---------- */
 .best {
   margin: 0; align-self: center; padding: 8px 16px; border-radius: 999px;
-  background: var(--mint); color: #145a42; font-weight: 800; font-size: 0.95rem;
+  background: var(--mint); color: var(--mint-ink); font-weight: 800; font-size: 0.95rem;
 }
 .best:empty { display: none; }
 .best.dark { background: rgba(255, 255, 255, 0.12); color: #ffd7d4; }
