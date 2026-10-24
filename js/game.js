@@ -61,7 +61,6 @@ export function newGame(rng = Math.random) {
     finished: false,
     busted: false,            // 0 açıldığı için oyun erken bittiyse true
     locked: false,            // seçim yapıldı, kartlar yeniden karışana kadar true
-    lastOp: null,
   };
 }
 
@@ -83,10 +82,6 @@ export function pickCard(state, index) {
   const comboLevel = previousPick === card.value ? previousCombo + 1 : 1;
   const normalScore = normalize(before * card.value);
   const after = normalize(normalScore * (comboLevel >= 2 ? comboLevel : 1));
-  const vText = card.value < 0 ? `(${card.value})` : `${card.value}`;
-  const op = comboLevel >= 2
-    ? `${fmt(before)} × ${vText} × ${comboLevel} = ${fmt(after)}`
-    : `${fmt(before)} × ${vText} = ${fmt(after)}`;
 
   const picks = state.picks.concat(card.value);
   const busted = card.value === 0;                    // 0 açılırsa oyun anında biter
@@ -103,6 +98,5 @@ export function pickCard(state, index) {
     finished,
     busted,
     locked: true,
-    lastOp: op,
   };
 }

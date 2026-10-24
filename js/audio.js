@@ -6,17 +6,39 @@
 
 import { loadMuted, saveMuted } from './storage.js';
 
+/* ----------------------------------------------------------
+   Yapılandırma
+   ----------------------------------------------------------
+   sessionType seçenekleri:
+     'ambient'        → Diğer seslerle karışır. Müzik ducklanmaz.
+                        iOS sessiz modda ÇALMAZ. (Varsayılan)
+     'playback'       → Diğer sesleri ducklar. iOS sessiz modda ÇALAR.
+                        (Eski davranış)
+     'transient'      → Kısa süreli ducking. iOS sessiz modda çalmaz.
+     'transient-solo' → Diğer sesleri keser. iOS sessiz modda çalar.
+
+   useSilentLoop: Yalnızca audioSession API YOKSA ve 'playback'
+   benzeri davranış gerekiyorsa true yapın. True iken bazı
+   platformlarda ducking'e sebep olabilir.
+   ---------------------------------------------------------- */
+const AUDIO_CONFIG = {
+  sessionType: 'ambient',
+  useSilentLoop: false,
+};
+
 export const GameAudio = (() => {
   let muted = loadMuted();
   let audioCtx = null;
   let primed = false;       // iOS: AudioContext tek seferlik boş tamponla "ısıtıldı" mı
   let sessionSet = false;
   let silentEl = null;      // iOS sessiz modunda Web Audio'yu duyurmak için sessiz döngü
+  let silentUrl = null;     // Blob URL cache (tek sefer üretilir)
 
-  /* ---------- Sessiz döngü (yalnızca navigator.audioSession yoksa) ---------- */
+  /* ---------- Sessiz döngü (yalnızca gerekirse) ---------- */
 
   function silentWavUrl() {
-    const rate = 8000, n = 8000;  // 1 sn sessizlik; 0,1 sn'lik döngüden çok daha seyrek yeniden başlar
+    if (silentUrl) return silentUrl;
+    const rate = 8000, n = 8000;  // 1 sn sessizlik
     const buf = new ArrayBuffer(44 + n);
     const v = new DataView(buf);
     const str = (o, t) => { for (let i = 0; i < t.length; i++) v.setUint8(o + i, t.charCodeAt(i)); };
@@ -26,7 +48,8 @@ export const GameAudio = (() => {
     v.setUint16(32, 1, true); v.setUint16(34, 8, true);
     str(36, 'data'); v.setUint32(40, n, true);
     new Uint8Array(buf, 44).fill(128);
-    return URL.createObjectURL(new Blob([buf], { type: 'audio/wav' }));
+    silentUrl = URL.createObjectURL(new Blob([buf], { type: 'audio/wav' }));
+    return silentUrl;
   }
 
   function playSilent() {
@@ -41,16 +64,28 @@ export const GameAudio = (() => {
 
   function setupSession() {
     if (sessionSet) return;
+
+    // 1) Modern API varsa kullan
+    if (typeof navigator !== 'undefined' && navigator.audioSession) {
+      try {
+        navigator.audioSession.type = AUDIO_CONFIG.sessionType;
+      } catch (e) { /* desteklemiyorsa yut */ }
+      sessionSet = true;
+      return;
+    }
+
+    // 2) Fallback: sessiz döngü (yalnızca opt-in)
+    if (AUDIO_CONFIG.useSilentLoop) {
+      try {
+        silentEl = new Audio(silentWavUrl());
+        silentEl.loop = true;
+        silentEl.setAttribute('playsinline', '');
+        playSilent();
+      } catch (e) {
+        silentEl = null;
+      }
+    }
     sessionSet = true;
-    try {
-      if (navigator.audioSession) { navigator.audioSession.type = 'playback'; return; }
-    } catch (e) { /* devam */ }
-    try {
-      silentEl = new Audio(silentWavUrl());
-      silentEl.loop = true;
-      silentEl.setAttribute('playsinline', '');
-      playSilent();
-    } catch (e) { silentEl = null; }
   }
 
   /* ---------- AudioContext ---------- */
@@ -85,8 +120,11 @@ export const GameAudio = (() => {
     setupSession();
     // Sessiz döngü ilk denemede reddedildiyse (autoplay), sonraki her dokunuşta yeniden dene.
     if (silentEl && silentEl.paused) playSilent();
+
+    if (primed) return; // touchend + click çift çağrısına karşı erken çıkış
+
     const c = audio();
-    if (!c || primed) return;
+    if (!c) return;
     try {
       const src = c.createBufferSource();
       src.buffer = c.createBuffer(1, 1, 22050);
@@ -96,13 +134,15 @@ export const GameAudio = (() => {
     } catch (e) { /* devam */ }
   }
 
-  ['touchend', 'click'].forEach((ev) => document.addEventListener(ev, unlockAudio, { capture: true, passive: true }));
+  ['touchend', 'click'].forEach((ev) =>
+    document.addEventListener(ev, unlockAudio, { capture: true, passive: true })
+  );
 
   // Sayfa arka plana geçince sessiz döngü de durur (pil ve medya oturumu için).
   document.addEventListener('visibilitychange', () => {
     if (document.visibilityState === 'visible') {
       primed = false;
-      playSilent();  // tarayıcı jest istemezse reddedilir; sonraki dokunuşta unlockAudio yeniden dener
+      playSilent();
     } else {
       pauseSilent();
     }
@@ -138,12 +178,15 @@ export const GameAudio = (() => {
     lp.frequency.value = freq;
     const g = ctx.createGain();
     const t = ctx.currentTime + at;
-    g.gain.setValueAtTime(gain, t);
+    // Click önlemek için 0.0001'den ramp'le
+    g.gain.setValueAtTime(0.0001, t);
+    g.gain.exponentialRampToValueAtTime(gain, t + 0.005);
     g.gain.exponentialRampToValueAtTime(0.0001, t + dur);
     src.connect(lp);
     lp.connect(g);
     g.connect(ctx.destination);
     src.start(t);
+    src.stop(t + dur + 0.03);
   }
 
   function playFlip() {
@@ -184,6 +227,11 @@ export const GameAudio = (() => {
     saveMuted(muted);
     if (muted) {
       pauseSilent();
+      // AudioContext'i askıya al: arka planda medya oturumu tutmasın
+      if (audioCtx && audioCtx.state === 'running') {
+        const p = audioCtx.suspend();
+        if (p && p.catch) p.catch(() => {});
+      }
     } else {
       unlockAudio();
       playFlip();

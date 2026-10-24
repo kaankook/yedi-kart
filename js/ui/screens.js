@@ -9,8 +9,6 @@ import { TOTAL_ROUNDS, fmt, totalScore, comboLabel } from '../game.js';
 import { GameAudio } from '../audio.js';
 import { loadBest } from '../storage.js';
 
-const HINT_TEXT = 'Bir karta dokun ve şansını dene!';
-
 // Ses düğmesi ikonları (çizgi stili aynı; kapalıda hoparlörde çarpı var)
 const ICON_SOUND_ON = '<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true" focusable="false"><path stroke-linecap="round" stroke-linejoin="round" d="M19.114 5.636a9 9 0 0 1 0 12.728M16.463 8.288a5.25 5.25 0 0 1 0 7.424M6.75 8.25l4.72-4.72a.75.75 0 0 1 1.28.53v15.88a.75.75 0 0 1-1.28.53l-4.72-4.72H4.51c-.88 0-1.704-.507-1.938-1.354A9.009 9.009 0 0 1 2.25 12c0-.83.112-1.633.322-2.396C2.806 8.756 3.63 8.25 4.51 8.25H6.75Z"/></svg>';
 const ICON_SOUND_OFF = '<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true" focusable="false"><path stroke-linecap="round" stroke-linejoin="round" d="M17.25 9.75 19.5 12m0 0 2.25 2.25M19.5 12l2.25-2.25M19.5 12l-2.25 2.25m-10.5-6 4.72-4.72a.75.75 0 0 1 1.28.53v15.88a.75.75 0 0 1-1.28.53l-4.72-4.72H4.51c-.88 0-1.704-.507-1.938-1.354A9.009 9.009 0 0 1 2.25 12c0-.83.112-1.633.322-2.396C2.806 8.756 3.63 8.25 4.51 8.25H6.75Z"/></svg>';
@@ -70,7 +68,9 @@ export function renderGameInfo(state, animate, pulseRound) {
   pill.textContent = text;
   if (changed && pulseRound) retrigger(pill, 'bump');
   setScore($('#score'), state.score, animate);
-  $('#last-op').textContent = state.lastOp ? state.lastOp : HINT_TEXT;
+  const gamePicked = $('#game-picked');
+  gamePicked.hidden = false;   // yuvalar baştan görünür; yerleşim ilk seçimde kaymaz
+  renderPickList($('#game-picked-list'), state, false);
 }
 
 /* ---------- Menü ve ses düğmeleri ---------- */
@@ -90,21 +90,42 @@ export function syncSoundButtons() {
 
 /* ---------- Sonuç ekranı ---------- */
 
+// Her tur için bir yuva çizer: oynanan turlar dolu hücre, kalanlar silik boş yuva.
+// Tek satırlı esnek şerit (wrap yok): 7 kare hücre ve aralarındaki oklar hep tek satırda kalır.
+// Tek yeni seçim geldiğinde yalnızca yeni ok + yeni hücre animasyonla belirir (ok önce, hücre sonra).
 function renderPickList(container, s, isGameOver) {
+  const sig = s.picks.join(',') + (isGameOver ? '|go' : '');
+  if (container.dataset.sig === sig) return;               // değişen bir şey yok: yeniden çizip animasyonu kesme
+  const prev = Number(container.dataset.count || 0);
+  const animateFrom = !isGameOver && s.picks.length - prev === 1 ? prev : -1;
+  container.dataset.sig = sig;
+  container.dataset.count = String(s.picks.length);
+
   container.innerHTML = '';
-  s.picks.forEach((v, i) => {
+  const slots = isGameOver ? s.picks.length : Math.max(TOTAL_ROUNDS, s.picks.length);   // game over'da boş yuva çizilmez (liste ortalanır)
+  container.style.setProperty('--slots', String(slots));
+  for (let i = 0; i < slots; i++) {
+    const filled = i < s.picks.length;
+    const fresh = animateFrom >= 0 && i >= animateFrom && filled;
     if (i > 0) {
       const arrow = document.createElement('span');
-      arrow.className = 'picked-arrow';
+      arrow.className = 'picked-arrow' + (filled ? '' : ' ghost') + (fresh ? ' is-new' : '');
       arrow.textContent = '→';
+      arrow.setAttribute('aria-hidden', 'true');
       container.appendChild(arrow);
     }
     const item = document.createElement('span');
-    const isDoom = isGameOver && i === s.picks.length - 1;
-    item.className = 'picked-item' + (v < 0 ? ' neg' : '') + (isDoom ? ' doom' : '');
-    item.textContent = String(v);
+    if (filled) {
+      const v = s.picks[i];
+      const isDoom = isGameOver && i === s.picks.length - 1;
+      item.className = 'picked-item' + (v < 0 ? ' neg' : '') + (isDoom ? ' doom' : '') + (fresh ? ' is-new' : '');
+      item.textContent = String(v);
+    } else {
+      item.className = 'picked-item ghost';
+      item.setAttribute('aria-hidden', 'true');
+    }
     container.appendChild(item);
-  });
+  }
 }
 
 // state.bestText önceden hazırlanmış olmalı (main.js hazırlar).

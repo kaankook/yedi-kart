@@ -150,13 +150,15 @@
 }
 
 /* ---------- Footer ----------
-   Ölçüler: 10.5px, -.1px, 18px boşluk. Renkler zemine uyumlu: --ink'in saydam tonları. */
+   dialed.gg ile birebir: 10.5px, -.1px, 18px boşluk, #00000047 yazı rengi, .56s renk geçişi.
+   Giriş animasyonu: .82s, gecikme .64s, easing cubic-bezier(.22,1,.36,1) (intro.css'te). */
 .site-footer {
-  --ft-dim: rgb(31 42 68 / 0.62);    /* yazı rengi */
-  --ft-dim2: rgb(31 42 68 / 0.74);   /* marka adı: bir ton koyu */
-  --ft-hover: var(--ink);
+  --ft-dim: #00000047;        /* yazı rengi */
+  --ft-dim2: #00000057;       /* marka adı: bir ton koyu */
+  --ft-hover: #0000008c;
   flex: none; display: flex; flex-direction: column; align-items: flex-start; gap: 0; padding: 0 0 2px;
   font-size: 10.5px; letter-spacing: -0.1px; color: var(--ft-dim);
+  transition: color 0.56s ease;
   -webkit-font-smoothing: antialiased;
 }
 .ft-row { display: flex; align-items: center; flex-wrap: wrap; column-gap: 12px; }  /* 12 + link dolgusu 6 = 18px */
@@ -222,9 +224,43 @@
 
 /* Kart alanı */
 .grid {
-  display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px;
-  width: 100%; max-width: 380px; margin: 0 auto;
+  display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--g, 12px);
+  width: var(--board-w, min(100%, 380px)); max-width: 100%; margin: 0 auto;
 }
+
+/* Oyun ekranı: altın oran (φ ≈ 1,618) yerleşimi.
+   Dikey düzen 8 satırlı bir ızgara: başlık | boşluk 1 | skor | combo (0) | kartlar | seçilenler | boşluk 1,618 | düğmeler.
+   Serbest alan, içeriğin üstünde ve altında 1 : 1,618 oranında bölünür; içerik optik merkezin biraz üstünde durur,
+   düğmeler başparmak bölgesinde alta oturur. Aralıklar φ ile ölçeklenir: --g → --g2 (×φ) → --g3 (×φ²).
+   Alan yetmezse boşluk satırları 0'a iner, hiçbir şey kırpılmaz. */
+#screen-game {
+  --g: clamp(8px, 1.6dvh, 14px);
+  --g2: calc(var(--g) * var(--phi));
+  --g3: calc(var(--g2) * var(--phi));
+  --game-gap: var(--g);
+  /* Tek sütun genişliği: başlık, skor, kartlar, seçilenler ve düğmeler hep bu genişlikte, sol/sağ kenarları aynı çizgide.
+     Yükseklik payı (19,5rem) sabit öğelerin toplamıdır; kalan küçük boşluk aşağıdaki 1 : 1,618 satırlarında bölünür. */
+  --board-w: min(380px, 100%, max(240px, calc(100dvh - 19.5rem)));
+}
+#screen-game.active {
+  display: grid; grid-template-columns: minmax(0, 1fr);
+  grid-template-rows: auto minmax(0, 1fr) auto 0 auto auto minmax(0, 1.618fr) auto;
+  align-content: start; gap: 0;
+  min-height: calc(100dvh - 40px);
+}
+#screen-game { justify-items: center; }
+#screen-game > .game-head,
+#screen-game > .score-card,
+#screen-game > .combo-banner,
+#screen-game > .grid,
+#screen-game > .game-picked,
+#screen-game > .row { width: var(--board-w); max-width: 100%; }
+#screen-game > .game-head { grid-row: 1; margin-bottom: var(--g2); }
+#screen-game > .score-card { grid-row: 3; }
+#screen-game > .combo-banner { grid-row: 4; }
+#screen-game > .grid { grid-row: 5; margin-top: var(--g2); }
+#screen-game > .game-picked { grid-row: 6; margin-top: var(--g2); }
+#screen-game > .row { grid-row: 8; margin-top: var(--g2); }
 
 .card {
   position: relative; aspect-ratio: 1 / 1; padding: 0; border: 0;
@@ -309,17 +345,9 @@
 .flash.on { animation: flash 0.95s ease-out; }
 @keyframes flash { 0% { opacity: 0; } 12% { opacity: 1; } 100% { opacity: 0; } }
 
-.last-op {
-  min-height: 44px; display: grid; place-items: center;
-  padding: 10px 14px; text-align: center; font-weight: 700; font-size: 1.05rem;
-  background: var(--surface); border: 2px dashed var(--line); border-radius: 14px;
-  font-variant-numeric: tabular-nums;
-  white-space: pre-line; line-height: 1.35;
-}
-
 .combo-banner {
-  min-height: 0;
-  margin: -4px 0;
+  height: 0; margin: 0; overflow: visible; position: relative; z-index: 2;
+  display: flex; align-items: center; justify-content: center;   /* görününce yerleşim kaymaz */
   color: var(--lilac-strong);
   font-size: 1.7rem;
   font-weight: 900;
@@ -341,15 +369,71 @@
    SONUÇ EKRANI
    ====================================================================== */
 
-.picked { display: flex; flex-direction: column; gap: 8px; }
-.picked-list { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
-.picked-item {
-  min-width: 40px; padding: 8px 10px; text-align: center; font-weight: 800;
-  background: var(--surface); border: 2px solid var(--line); border-radius: 12px;
-  color: var(--ink);
+/* Seçilen kartlar: kutusuz, ince çizgili küçük hücreler. Her tur için bir yuva ayrılır;
+   boş yuvalar silik kesikli çizgidir. Izgara olduğu için 7 hücre hep tek satırda kalır, yer değiştirmez. */
+.picked {
+  --pick-bg: #f9fafd; --pick-line: #e4e8f3;            /* #F4F6FB'den hafif açık */
+  --pick-neg-bg: #fbf7f9; --pick-neg-line: #f1e0e4;
+  display: flex; flex-direction: column; gap: 6px;
+  width: var(--board-w, min(100%, 380px)); max-width: 100%; margin-inline: auto;
 }
-.picked-item.neg { color: var(--neg); border-color: var(--neg); }
-.picked-arrow { color: var(--muted); }
+.picked > .label {
+  font-size: 0.68rem; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase;
+  color: var(--muted); opacity: 0.85;
+}
+.picked-list {
+  display: flex; flex-wrap: nowrap; align-items: center; gap: 4px;
+  width: 100%; min-width: 0;
+}
+.picked-item {
+  --ring: var(--blue-strong);
+  flex: 1 1 0; min-width: 0; aspect-ratio: 1 / 1; position: relative;   /* kare hücre */
+  display: grid; place-items: center; padding: 0;
+  font-size: 0.88rem; font-weight: 600; line-height: 1; white-space: nowrap; font-variant-numeric: tabular-nums;
+  border-radius: 9px;
+  /* soft palet: zemin #F4F6FB; yazı mürekkebin ~%68'i (color-mix yoksa düz renk) */
+  color: var(--muted);
+  color: color-mix(in srgb, var(--ink) 68%, transparent);
+  background: var(--pick-bg); border: 1px solid var(--pick-line);
+}
+.picked-item.neg {
+  --ring: var(--neg);
+  color: var(--neg);
+  color: color-mix(in srgb, var(--neg) 78%, transparent);
+  background: var(--pick-neg-bg); border-color: var(--pick-neg-line);
+}
+/* Açılmamış yuvalar görünmez: yer tutarlar (hücre boyutu ve yerleşim sabit kalır) ama ekranda yoktur. */
+.picked-item.ghost, .picked-arrow.ghost { visibility: hidden; }
+
+.picked-arrow {
+  flex: none; color: var(--blue-strong); font-size: 0.72rem; line-height: 1; opacity: 0.75;
+  transform-origin: left center;
+}
+
+/* Yeni seçim, sırayla üç adımda belirir:
+   1) ok soldan çizilir  2) hücre kendi rengiyle yaylanarak (hafif taşarak) yerine oturur
+   3) hücrenin etrafında tek bir halka yayılıp söner. */
+.picked-arrow.is-new { animation: pick-arrow 0.26s var(--ease-out) both; }
+.picked-item.is-new {
+  animation: pick-chip 0.38s cubic-bezier(0.34, 1.56, 0.64, 1) 0.1s both;
+}
+.picked-item.is-new::after {
+  content: ""; position: absolute; inset: -1px; border-radius: inherit; pointer-events: none;
+  animation: pick-ring 0.5s var(--ease-out) 0.28s both;
+}
+@keyframes pick-arrow {
+  from { opacity: 0; scale: 0.4 1; translate: -6px 0; }
+  to   { opacity: 0.75; scale: 1 1; translate: 0 0; }
+}
+@keyframes pick-chip {
+  from { opacity: 0; scale: 0.55; translate: -8px 0; }
+  to   { opacity: 1; scale: 1; translate: 0 0; }
+}
+@keyframes pick-ring {
+  from { opacity: 1; box-shadow: 0 0 0 0 color-mix(in srgb, var(--ring) 45%, transparent); }
+  to   { opacity: 0; box-shadow: 0 0 0 9px transparent; }
+}
+@media (prefers-reduced-motion: reduce) { .is-new, .is-new::after { animation: none; } }
 
 /* ======================================================================
    GAME OVER
@@ -396,11 +480,15 @@
   animation-delay: 0.95s;
 }
 .go-combo:empty { display: none; }
-.go-picks { display: flex; flex-direction: column; gap: 8px; align-items: center; animation-delay: 1.35s; }
-.go-picks .picked-list { justify-content: center; }
-.go-picks .picked-item { background: rgba(255, 255, 255, 0.1); border-color: rgba(255, 255, 255, 0.25); color: #fff; }
-.go-picks .picked-item.neg { color: #ff9a94; border-color: #ff9a94; }
+.go-picks {
+  display: flex; flex-direction: column; gap: 8px; align-items: center;
+  width: min(100%, 360px); animation-delay: 1.35s;
+}
+.go-picks .picked-item { background: rgba(255, 255, 255, 0.08); border-color: rgba(255, 255, 255, 0.22); color: #fff; }
+.go-picks .picked-item.neg { color: #ff9a94; }
 .go-picks .picked-item.doom { background: #ff5a52; border-color: #ff5a52; color: #fff; }
+.go-picks .picked-list { justify-content: center; }
+.go-picks .picked-item { max-width: 40px; }
 .go-picks .picked-arrow { color: rgba(255, 255, 255, 0.5); }
 #go-best { animation-delay: 1.5s; }
 
