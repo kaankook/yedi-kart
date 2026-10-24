@@ -68,6 +68,10 @@ body.dark {
   height: calc(100dvh - var(--safe-t) - var(--safe-b));
 }
 
+.menu > :not(.site-footer) {
+  font-family: "Suisse Intl S Alt", -apple-system, Inter, system-ui, sans-serif;
+}
+
 .menu-top { flex: none; display: flex; align-items: center; justify-content: space-between; }
 .brand { display: flex; align-items: center; gap: 10px; }
 .brand-mark {
@@ -126,6 +130,18 @@ body.dark {
 /* Düğme + alt not: aynı genişlik ve ritim */
 .menu-actions { display: flex; flex-direction: column; gap: 10px; align-items: stretch; }
 .menu-actions .btn.primary.big { min-height: 58px; font-size: 1.15rem; border-radius: 18px; letter-spacing: 0.01em; }
+
+/* Oyuna Başla + Nasıl Oynanır yan yana; dar ekranda alt alta */
+.play-row { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 10px; }
+.play-row .btn { white-space: nowrap; }
+.play-row .btn.primary.big { padding: 0 12px; }
+.btn.light {
+  padding: 0 16px; font-size: 1rem; border-radius: 18px;
+  background: var(--surface); color: var(--ink);
+  box-shadow: 0 4px 12px rgba(31, 42, 68, 0.08);
+}
+@media (hover: hover) { .btn.light:hover { filter: brightness(0.97); } }
+@media (max-width: 350px) { .play-row { grid-template-columns: 1fr; } }
 .foot { margin: 0; text-align: center; color: var(--muted); font-size: 0.82rem; line-height: 1.3; }
 .menu-actions:has(.best:not(:empty)) .foot { display: none; }
 .menu-actions .best { font-size: 0.88rem; padding: 7px 14px; }
@@ -135,28 +151,40 @@ body.dark {
   text-transform: uppercase; color: var(--muted);
 }
 
-/* İletişim: sayfaya gömülü, tek renk, minimal */
-.site-footer { flex: none; display: flex; flex-direction: column; align-items: center; padding-bottom: 2px; }
-.ct {
-  display: inline-flex; align-items: center; gap: 7px; min-height: 40px; padding: 0 8px;
-  color: var(--muted); font-size: 0.9rem; font-weight: 600; text-decoration: none;
-  transition: color 0.2s;
+/* Footer: dialed.gg ile aynı ölçüler (10.5px, #00000047, -.1px, 18px boşluk).
+   Not: "Suisse Intl S Alt" lisanslı bir font; sitede yüklü değilse sıradaki yedek font kullanılır. */
+.site-footer {
+  --ft-dim: #00000047;        /* yazı rengi */
+  --ft-dim2: #00000057;       /* marka adı: bir ton koyu */
+  --ft-hover: #0000008c;
+  flex: none; display: flex; flex-direction: column; align-items: flex-start; gap: 0; padding: 0 0 2px;
+  font-family: "Suisse Intl S Alt", -apple-system, Inter, system-ui, sans-serif;
+  font-size: 10.5px; letter-spacing: -0.1px; color: var(--ft-dim);
+  -webkit-font-smoothing: antialiased;
 }
-.ct svg { flex: none; }
-.ct-row { display: flex; align-items: center; justify-content: center; }
-.ct-dot { color: var(--muted); opacity: 0.5; }
-@media (hover: hover) { .ct:hover { color: var(--ink); } }
-.ct:focus-visible { outline: 3px solid var(--blue-strong); outline-offset: 2px; border-radius: 8px; }
-.copyright { margin: 2px 0 0; color: var(--muted); font-size: 0.75rem; text-align: center; }
+.ft-row { display: flex; align-items: center; flex-wrap: wrap; column-gap: 12px; }  /* 12 + link dolgusu 6 = 18px */
+.ft-brand {
+  display: inline-flex; align-items: center; gap: 7px; min-height: 36px;
+  color: var(--ft-dim2); font-size: 11.5px; font-weight: 600;
+}
+.ft-mark {
+  width: 14px; height: 14px; display: grid; place-items: center; flex: none;
+  border: 1.3px solid currentColor; border-radius: 4.5px; font-size: 8.5px; font-weight: 800; line-height: 1;
+}
+.ft-links { display: flex; align-items: center; flex-wrap: wrap; gap: 6px; }          /* 6 + 6 + 6 = 18px */
+.ft-links a {
+  display: inline-flex; align-items: center; min-height: 36px; padding: 0 6px;
+  color: inherit; font-weight: 500; text-decoration: none; transition: color 0.2s;
+}
+@media (hover: hover) { .ft-links a:hover { color: var(--ft-hover); } }
+.ft-links a:focus-visible { outline: 3px solid var(--blue-strong); outline-offset: 2px; border-radius: 8px; }
+.copyright { margin: -2px 0 0; color: inherit; font-size: inherit; line-height: 1.4; }
 
 /* Kısa ekranlar: önce ikincil metinler gider, böylece menü hep tek ekrana sığar */
 @media (max-height: 720px) { .foot { display: none; } }
 @media (max-height: 640px) {
   .hero-sub { display: none; }
   .menu-actions .btn.primary.big { min-height: 52px; font-size: 1.1rem; }
-}
-@media (max-width: 360px) {
-  .ct { font-size: 0.85rem; padding: 0 6px; gap: 6px; }
 }
 @media (max-height: 540px) {
   .hero { --ch: 50px; }
@@ -201,12 +229,19 @@ body.dark {
 /* ---------- Oyun ekranı ---------- */
 .game-head { display: flex; align-items: center; justify-content: space-between; }
 .head-right { display: flex; align-items: center; gap: 8px; }
+/* Ses düğmesi: çerçevesiz, arka plansız; yalnızca ikon (dialed.gg ölçüleri) */
 .icon-btn {
-  width: 38px; height: 38px; border-radius: 999px; border: 2px solid var(--line);
-  background: var(--surface); font-size: 1.05rem; display: grid; place-items: center;
-  cursor: pointer; transition: transform 0.08s; padding: 0;
+  --dim: #0000008c;
+  position: relative; z-index: 1;
+  width: 32px; height: 32px; margin: 0 -6px; padding: 0;
+  display: grid; place-items: center;
+  background: none; border: 0; cursor: pointer;
+  color: var(--dim); transition: color 0.2s;
 }
-.icon-btn:active { transform: scale(0.92); }
+@media (hover: hover) { .icon-btn:hover { color: var(--ink); } }
+.icon-btn:active { color: var(--ink); }
+.icon-btn:focus-visible { outline: 3px solid var(--blue-strong); outline-offset: 2px; border-radius: 8px; }
+.icon-btn svg { width: 20px; height: 20px; display: block; }
 .pill {
   padding: 8px 14px; border-radius: 999px; background: var(--lilac);
   color: #3d2c85; font-weight: 800; font-size: 0.95rem;
@@ -442,6 +477,72 @@ body.dark {
   margin: 0; text-align: center; font-size: 1.1rem; font-weight: 700; line-height: 1.4;
 }
 
+/* ---------- Nasıl oynanır (<dialog class="confirm howto">) ----------
+   Yapı: üstte sabit başlık, ortada kaydırılan içerik, altta sabit buton. */
+.howto {
+  width: calc(100% - 32px); max-width: 380px; max-height: calc(100dvh - 32px);
+  padding: 0; overflow: hidden; border-radius: 28px; text-align: left;
+  font-family: "Suisse Intl S Alt", -apple-system, Inter, system-ui, sans-serif;
+  box-shadow: 0 24px 60px rgba(31, 42, 68, 0.28);
+}
+.howto form { gap: 0; max-height: inherit; }   /* dialog yalnızca açıkken görünür; düzen form üzerinden */
+
+.howto-head { flex: none; display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; padding: 22px 16px 14px 22px; }
+.howto h2 { margin: 0; font-size: 1.5rem; font-weight: 800; line-height: 1.15; letter-spacing: -0.03em; }
+.howto-sub { margin-top: 4px; color: var(--muted); font-size: 0.9rem; line-height: 1.4; }
+.howto .howto-x { flex: none; margin: 0; }
+
+.howto-body {
+  flex: 1 1 auto; min-height: 0; overflow-y: auto; overscroll-behavior: contain;
+  padding: 4px 22px 24px;
+  -webkit-mask-image: linear-gradient(#000 calc(100% - 24px), transparent);
+  mask-image: linear-gradient(#000 calc(100% - 24px), transparent);
+}
+.howto-foot { flex: none; padding: 4px 22px 22px; }
+.howto .btn.primary.big { width: 100%; min-height: 56px; font-size: 1.1rem; border-radius: 18px; }
+
+/* Özet kutuları */
+.hw-stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 14px; }
+.hw-stat { display: flex; flex-direction: column; align-items: center; gap: 4px; padding: 12px 6px 10px; border-radius: 16px; }
+.hw-stat b { font-size: 1.7rem; font-weight: 800; line-height: 1; font-variant-numeric: tabular-nums; }
+.hw-stat span { font-size: 0.68rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; }
+.s-blue { background: #e6f2fd; color: #2a68ad; }
+.s-mint { background: #e3f6ee; color: #1b7555; }
+.s-lilac { background: #efeafc; color: #5b3fb5; }
+
+/* Adımlar: kart rozetleriyle aynı renk dili */
+.hw-steps { margin: 0; padding: 0; list-style: none; display: flex; flex-direction: column; gap: 2px; }
+.hw-step { display: grid; grid-template-columns: 40px minmax(0, 1fr); gap: 14px; align-items: start; padding: 10px 0; }
+.hw-step.danger { margin: 0 -12px; padding: 12px; background: #fdf3f2; border-radius: 16px; }
+.hw-badge {
+  width: 40px; height: 40px; display: grid; place-items: center; border-radius: 12px;
+  color: #fff; font-size: 1.15rem; font-weight: 800; line-height: 1;
+  box-shadow: 0 6px 12px rgba(31, 42, 68, 0.14);
+}
+.b-blue { background: linear-gradient(135deg, var(--blue-strong), #7fb6ee); }
+.b-mint { background: linear-gradient(135deg, var(--mint-strong), #7fd1b0); }
+.b-lilac { background: linear-gradient(135deg, var(--lilac-strong), #b3a1ec); font-size: 1rem; }
+.b-red { background: linear-gradient(135deg, var(--neg), #ef8a86); }
+.b-ink { background: linear-gradient(135deg, #3b4766, #6b7694); }
+.hw-title { display: block; font-size: 1rem; font-weight: 800; line-height: 1.3; letter-spacing: -0.01em; }
+.danger .hw-title { color: #b4332f; }
+.hw-desc { display: block; margin-top: 2px; color: var(--muted); font-size: 0.9rem; line-height: 1.45; }
+.hw-ex { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; margin-top: 8px; color: var(--muted); font-size: 0.82rem; font-weight: 600; }
+.hw-eq {
+  padding: 4px 10px; border-radius: 999px; background: #f4f1ea; color: var(--ink);
+  font-size: 0.85rem; font-weight: 700; font-variant-numeric: tabular-nums; white-space: nowrap;
+}
+
+/* Açılışta kutular ve adımlar sırayla belirir */
+.howto[open] :is(.hw-stat, .hw-step) {
+  animation: enter var(--enter-dur) var(--enter-ease) backwards;
+  animation-delay: calc(100ms + var(--i, 0) * 45ms);
+}
+.hw-stat:nth-child(1) { --i: 0; } .hw-stat:nth-child(2) { --i: 1; } .hw-stat:nth-child(3) { --i: 2; }
+.hw-step:nth-child(1) { --i: 3; } .hw-step:nth-child(2) { --i: 4; } .hw-step:nth-child(3) { --i: 5; }
+.hw-step:nth-child(4) { --i: 6; } .hw-step:nth-child(5) { --i: 7; }
+@media (prefers-reduced-motion: reduce) { .howto[open] :is(.hw-stat, .hw-step) { animation: none; } }
+
 @keyframes fade-in { from { opacity: 0; } to { opacity: 1; } }
 @keyframes modal-pop { from { transform: scale(0.9); opacity: 0; } to { transform: scale(1); opacity: 1; } }
 
@@ -468,7 +569,7 @@ body.dark {
 
   /* Skor, tur ve düğme vurguları */
   .pill.bump, .score.bump { animation: none; }
-  .btn, .icon-btn, .ct { transition: none; }
+  .btn, .icon-btn, .ft-links a { transition: none; }
   .btn:active:not(:disabled), .icon-btn:active { transform: none; }
   body { transition: none; }
   .fcard { animation: none; }
@@ -489,4 +590,64 @@ body.dark {
 
   /* Onay kutusu */
   .confirm[open], .confirm[open]::backdrop { animation: none; }
+}
+/* ---------- Açılış animasyonu (sayfa ilk açıldığında) ----------
+   <html class="intro"> ile başlar; ui.js sınıfı animasyon bitince ya da ilk dokunuşta kaldırır.
+   Böylece ekran geçişleri ve tur yenilemeleri bu animasyonu tekrar oynatmaz.
+   Yalnızca opacity + translate kullanılır: GPU'da çalışır, iOS'ta akıcıdır.
+   Sıra: --i (öğe sırası) × --enter-step; kartlar mevcut --wave çapraz dalgasını izler. */
+:root {
+  --enter-ease: cubic-bezier(0.22, 1, 0.36, 1);   /* easeOutQuint: hızlı başlar, yumuşak oturur */
+  --enter-dur: 640ms;
+  --enter-y: 14px;
+  --enter-base: 60ms;
+  --enter-step: 60ms;
+  --enter-wave: 1.4;
+  --enter-dur-slow: 820ms;
+}
+
+@keyframes enter {
+  from { opacity: 0; translate: 0 var(--enter-y); }
+}
+
+.intro :is(
+  .menu-top, .hero-panel, .hero, .hero-title, .hero-sub,
+  .menu-actions .btn, .menu-actions .best, .menu-actions .foot,
+  .site-footer,
+  .game-head, .score-card, .last-op, .grid .card,
+  .screen:not(.gameover) > .row,
+  .screen > .title, .screen > .muted, .screen > .best, .screen > .picked
+) {
+  animation: enter var(--enter-dur) var(--enter-ease) backwards;   /* backwards: bitince öğenin kendi stiline döner */
+  animation-delay: var(--d, calc(var(--enter-base) + var(--i, 0) * var(--enter-step)));
+}
+
+/* Menü */
+.menu-top { --i: 0; }
+.hero-panel { --i: 1; }
+.hero { --i: 3; }
+.hero-title { --i: 4; }
+.hero-sub { --i: 5; }
+.menu-actions .btn { --i: 6; }
+.menu-actions .best, .menu-actions .foot { --i: 7; }
+.site-footer { --i: 10; }
+.intro .site-footer { animation-duration: var(--enter-dur-slow); }   /* 60 + 10×60 ≈ 640ms gecikme */
+
+/* Oyun (sayfa yenilendiğinde oyun sürüyorsa) */
+.game-head { --i: 0; }
+.score-card { --i: 1; }
+.grid .card { --d: calc(var(--enter-base) + 2 * var(--enter-step) + var(--wave, 0ms) * var(--enter-wave)); }
+.last-op { --i: 6; }
+#screen-game > .row { --i: 7; }
+
+/* Sonuç */
+#screen-result > .title { --i: 0; }
+#screen-result > .muted { --i: 2; }
+#screen-result > .best { --i: 3; }
+#screen-result > .picked { --i: 4; }
+#screen-result > .row { --i: 5; }
+
+/* Azaltılmış hareket: kayma ve sıralama yok, kısa ve yumuşak bir belirme */
+@media (prefers-reduced-motion: reduce) {
+  :root { --enter-y: 0px; --enter-dur: 300ms; --enter-dur-slow: 300ms; --enter-base: 0ms; --enter-step: 0ms; --enter-wave: 0; }
 }

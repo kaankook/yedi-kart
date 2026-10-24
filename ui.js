@@ -10,6 +10,10 @@
   const $$ = (sel) => Array.from(document.querySelectorAll(sel));
 
   const HINT_TEXT = 'Bir karta dokun ve şansını dene!';
+
+  // Ses düğmesi ikonları (çizgi stili aynı; kapalıda hoparlörde çarpı var)
+  const ICON_SOUND_ON = '<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true" focusable="false"><path stroke-linecap="round" stroke-linejoin="round" d="M19.114 5.636a9 9 0 0 1 0 12.728M16.463 8.288a5.25 5.25 0 0 1 0 7.424M6.75 8.25l4.72-4.72a.75.75 0 0 1 1.28.53v15.88a.75.75 0 0 1-1.28.53l-4.72-4.72H4.51c-.88 0-1.704-.507-1.938-1.354A9.009 9.009 0 0 1 2.25 12c0-.83.112-1.633.322-2.396C2.806 8.756 3.63 8.25 4.51 8.25H6.75Z"/></svg>';
+  const ICON_SOUND_OFF = '<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true" focusable="false"><path stroke-linecap="round" stroke-linejoin="round" d="M17.25 9.75 19.5 12m0 0 2.25 2.25M19.5 12l2.25-2.25M19.5 12l-2.25 2.25m-10.5-6 4.72-4.72a.75.75 0 0 1 1.28.53v15.88a.75.75 0 0 1-1.28.53l-4.72-4.72H4.51c-.88 0-1.704-.507-1.938-1.354A9.009 9.009 0 0 1 2.25 12c0-.83.112-1.633.322-2.396C2.806 8.756 3.63 8.25 4.51 8.25H6.75Z"/></svg>';
   const BEST_KEY = 'yedikart.best.mul';
   const SAVE_KEY = 'yedikart.save.v1';
 
@@ -106,7 +110,7 @@
   function syncSoundButtons() {
     const muted = GameAudio.isMuted();
     $$('.sound-btn').forEach((b) => {
-      b.textContent = muted ? '🔇' : '🔊';
+      b.innerHTML = muted ? ICON_SOUND_OFF : ICON_SOUND_ON;
       b.setAttribute('aria-label', muted ? 'Sesi aç' : 'Sesi kapat');
     });
   }
@@ -438,7 +442,33 @@
   $('#btn-menu-result').addEventListener('click', goMenu);
   $$('.sound-btn').forEach((b) => b.addEventListener('click', toggleSound));
 
+  // Nasıl oynanır: kartın dışındaki karartılmış alana dokununca da kapanır.
+  const howto = $('#howto-dialog');
+  $('#btn-howto').addEventListener('click', () => howto.showModal());
+  howto.addEventListener('click', (e) => {
+    if (e.clientX === 0 && e.clientY === 0) return;   // klavyeyle tetiklenen tıklama
+    const r = howto.getBoundingClientRect();
+    if (e.clientX < r.left || e.clientX > r.right || e.clientY < r.top || e.clientY > r.bottom) howto.close();
+  });
+
   syncSoundButtons();
   renderMenuBest();
   resume();
+
+  /* ---------- Açılış animasyonu ----------
+     <html class="intro"> ile başlar (style.css). Animasyon bitince ya da kullanıcı ilk kez
+     dokununca/tuşa basınca sınıf kalkar; sonraki ekran geçişleri ve tur yenilemeleri etkilenmez. */
+  const root = document.documentElement;
+  if (root.classList.contains('intro')) {
+    const INTRO_MS = 1600;   // en geç öğe ~1300ms'de biter
+    const events = ['pointerdown', 'keydown'];
+    let introTimer = null;
+    const endIntro = () => {
+      clearTimeout(introTimer);
+      events.forEach((ev) => window.removeEventListener(ev, endIntro, true));
+      root.classList.remove('intro');
+    };
+    introTimer = setTimeout(endIntro, INTRO_MS);
+    events.forEach((ev) => window.addEventListener(ev, endIntro, true));
+  }
 })();

@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="tr">
+<html lang="tr" class="intro">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
@@ -28,7 +28,7 @@
           <span class="brand-mark" aria-hidden="true">7</span>
           <span class="brand-name">Yedi Kart</span>
         </div>
-        <button type="button" class="icon-btn sound-btn" aria-label="Sesi kapat">🔊</button>
+        <button type="button" class="icon-btn sound-btn" aria-label="Sesi kapat"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true" focusable="false"><path stroke-linecap="round" stroke-linejoin="round" d="M19.114 5.636a9 9 0 0 1 0 12.728M16.463 8.288a5.25 5.25 0 0 1 0 7.424M6.75 8.25l4.72-4.72a.75.75 0 0 1 1.28.53v15.88a.75.75 0 0 1-1.28.53l-4.72-4.72H4.51c-.88 0-1.704-.507-1.938-1.354A9.009 9.009 0 0 1 2.25 12c0-.83.112-1.633.322-2.396C2.806 8.756 3.63 8.25 4.51 8.25H6.75Z"/></svg></button>
       </header>
 
       <div class="hero-panel">
@@ -43,27 +43,23 @@
         </div>
 
         <div class="menu-actions">
-          <button type="button" id="btn-play" class="btn primary big">Oyuna Başla</button>
+          <div class="play-row">
+            <button type="button" id="btn-play" class="btn primary big">Oyuna Başla</button>
+            <button type="button" id="btn-howto" class="btn light" aria-haspopup="dialog">Nasıl Oynanır?</button>
+          </div>
           <p id="menu-best" class="best" aria-live="polite"></p>
           <p class="foot">Kartlar her turdan sonra yeniden karışır</p>
         </div>
       </div>
 
-      <footer class="site-footer" aria-label="İletişim">
-        <a class="ct" href="mailto:yedikartapp@gmail.com">
-          <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="3"/><path d="m4 7 8 6 8-6"/></svg>
-          <span>yedikartapp@gmail.com</span>
-        </a>
-        <div class="ct-row">
-          <a class="ct" href="https://www.instagram.com/yedi_kart" target="_blank" rel="noopener noreferrer" aria-label="Instagram: @yedi_kart (yeni sekmede açılır)">
-            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.3" cy="6.7" r="1" fill="currentColor" stroke="none"/></svg>
-            <span>yedi_kart</span>
-          </a>
-          <span class="ct-dot" aria-hidden="true">·</span>
-          <a class="ct" href="https://x.com/yedikart" target="_blank" rel="noopener noreferrer" aria-label="X: @yedikart (yeni sekmede açılır)">
-            <svg viewBox="0 0 24 24" width="14" height="14" fill="currentColor" aria-hidden="true"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
-            <span>yedikart</span>
-          </a>
+      <footer class="site-footer" aria-label="Alt bilgi">
+        <div class="ft-row">
+          <span class="ft-brand"><span class="ft-mark" aria-hidden="true">7</span>Yedi Kart</span>
+          <nav class="ft-links" aria-label="İletişim">
+            <a href="mailto:yedikartapp@gmail.com">İletişim</a>
+            <a href="https://www.instagram.com/yedi_kart" target="_blank" rel="noopener noreferrer" aria-label="Instagram: @yedi_kart (yeni sekmede açılır)">Instagram</a>
+            <a href="https://x.com/yedikart" target="_blank" rel="noopener noreferrer" aria-label="X: @yedikart (yeni sekmede açılır)">X</a>
+          </nav>
         </div>
         <p class="copyright">© 2026 Yedi Kart. Tüm hakları saklıdır.</p>
       </footer>
@@ -75,7 +71,7 @@
         <h2 class="title small">Yedi Kart</h2>
         <div class="head-right">
           <span id="round-pill" class="pill" aria-live="polite">Tur 1 / 7</span>
-          <button type="button" class="icon-btn sound-btn" aria-label="Sesi kapat">🔊</button>
+          <button type="button" class="icon-btn sound-btn" aria-label="Sesi kapat"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true" focusable="false"><path stroke-linecap="round" stroke-linejoin="round" d="M19.114 5.636a9 9 0 0 1 0 12.728M16.463 8.288a5.25 5.25 0 0 1 0 7.424M6.75 8.25l4.72-4.72a.75.75 0 0 1 1.28.53v15.88a.75.75 0 0 1-1.28.53l-4.72-4.72H4.51c-.88 0-1.704-.507-1.938-1.354A9.009 9.009 0 0 1 2.25 12c0-.83.112-1.633.322-2.396C2.806 8.756 3.63 8.25 4.51 8.25H6.75Z"/></svg></button>
         </div>
       </header>
 
@@ -153,6 +149,73 @@
       <div class="row">
         <button type="submit" value="cancel" class="btn ghost">Vazgeç</button>
         <button type="submit" value="ok" class="btn primary">Evet</button>
+      </div>
+    </form>
+  </dialog>
+
+  <!-- Nasıl oynanır (ana menüden açılır) -->
+  <dialog id="howto-dialog" class="confirm howto" aria-labelledby="howto-title">
+    <form method="dialog">
+      <header class="howto-head">
+        <div>
+          <h2 id="howto-title">Nasıl Oynanır?</h2>
+          <div class="howto-sub">Kısa kurallar, tek hedef: en yüksek skor.</div>
+        </div>
+        <button type="submit" value="close" class="icon-btn howto-x" aria-label="Kapat">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true" focusable="false"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12"/></svg>
+        </button>
+      </header>
+
+      <div class="howto-body">
+        <div class="hw-stats" aria-hidden="true">
+          <div class="hw-stat s-blue"><b>9</b><span>Kart</span></div>
+          <div class="hw-stat s-mint"><b>7</b><span>Tur</span></div>
+          <div class="hw-stat s-lilac"><b>1</b><span>Başlangıç</span></div>
+        </div>
+
+        <ol class="hw-steps">
+          <li class="hw-step">
+            <span class="hw-badge b-blue" aria-hidden="true">1</span>
+            <div>
+              <strong class="hw-title">Skorun 1'le başlar</strong>
+              <span class="hw-desc">Masada 9 kapalı kart var: -1, 0 ve 1'den 7'ye kadar sayılar.</span>
+            </div>
+          </li>
+          <li class="hw-step">
+            <span class="hw-badge b-mint" aria-hidden="true">×</span>
+            <div>
+              <strong class="hw-title">Her turda tek kart seç</strong>
+              <span class="hw-desc">Kartın sayısı skorunla çarpılır.</span>
+              <span class="hw-ex">Skor 4, kart 3 <span class="hw-eq">4 × 3 = 12</span></span>
+            </div>
+          </li>
+          <li class="hw-step">
+            <span class="hw-badge b-lilac" aria-hidden="true">×2</span>
+            <div>
+              <strong class="hw-title">Combo yap</strong>
+              <span class="hw-desc">Üst üste aynı sayıyı seçersen çarpan büyür.</span>
+              <span class="hw-ex">3, sonra yine 3 <span class="hw-eq">1 × 3 = 3</span><span aria-hidden="true">→</span><span class="hw-eq">3 × 3 × 2 = 18</span></span>
+            </div>
+          </li>
+          <li class="hw-step danger">
+            <span class="hw-badge b-red" aria-hidden="true">0</span>
+            <div>
+              <strong class="hw-title">Sıfıra dikkat!</strong>
+              <span class="hw-desc">0 açılırsa oyun anında biter ve skorun sıfırlanır. -1 ise skorunun işaretini ters çevirir.</span>
+            </div>
+          </li>
+          <li class="hw-step">
+            <span class="hw-badge b-ink" aria-hidden="true">7</span>
+            <div>
+              <strong class="hw-title">Kartlar her tur karışır</strong>
+              <span class="hw-desc">Seçince diğer kartlar kısa süre açılır, sonra hepsi kapanıp yeniden karışır. 7 turu sıfır görmeden bitirirsen skorun kalır.</span>
+            </div>
+          </li>
+        </ol>
+      </div>
+
+      <div class="howto-foot">
+        <button type="submit" value="ok" class="btn primary big" autofocus>Anladım</button>
       </div>
     </form>
   </dialog>
