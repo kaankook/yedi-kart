@@ -51,10 +51,10 @@ export function initFirstRound() {
     timer = setTimeout(clear, HOLD_MS);
   }
 
+  // Ekran etkinleşir etkinleşmez (ilk kare çizilmeden) çalışır: gecikirse ekran önce tam görünür,
+  // sonra animasyonla yeniden belirir ve titreme olur. Gözlemci mikro görevi boyamadan önce koşar.
   function onActivated() {
-    requestAnimationFrame(() => requestAnimationFrame(() => {
-      if (screen.classList.contains('active') && roundNo() === 1) play();
-    }));
+    if (screen.classList.contains('active') && roundNo() === 1) play();
   }
 
   new MutationObserver(() => {

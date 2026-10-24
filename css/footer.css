@@ -36,29 +36,5 @@
 .ft-links a:focus-visible { outline: 3px solid var(--blue-strong); outline-offset: 2px; border-radius: 8px; }
 .copyright { margin: -2px 0 0; color: inherit; font-size: inherit; line-height: 1.4; }
 
-/* Kısa ekranlar: önce ikincil metinler gider, böylece menü hep tek ekrana sığar */
-@media (max-height: 720px) { .foot { display: none; } }
-@media (max-height: 640px) {
-  .hero-sub { display: none; }
-  .menu-actions .play-row .btn { min-height: 52px; }
-}
-@media (max-height: 540px) {
-  .hero { --ch: 50px; }
-  .brand-mark { width: 30px; height: 30px; font-size: 1rem; }
-  .copyright { display: none; }
-  .hero-panel { padding-top: 8px; padding-bottom: 8px; }
-}
-
-/* Yatay telefon: iki sütun (sol: oyuna giriş, sağ: iletişim) */
-@media (orientation: landscape) and (max-height: 520px) {
-  body:has(#screen-menu.active) .app { max-width: 880px; }
-  .menu.active { display: grid; grid-template-columns: 1fr 1fr; grid-template-rows: auto minmax(0, 1fr); column-gap: 16px; row-gap: 8px; }
-  .menu-top { grid-column: 1 / -1; }
-  .hero-panel { grid-column: 1; grid-row: 2; }
-  .site-footer { grid-column: 2; grid-row: 2; justify-content: center; align-self: stretch; }
-  .hero-sub, .foot { display: none; }
-  .copyright { display: block; }
-  .hero { --ch: clamp(44px, 14dvh, 70px); }
-  .hero-title { font-size: clamp(1.3rem, 7dvh, 1.9rem); }
-  .hero-zone { gap: calc(var(--gap) * 0.5); }
-}
+/* Çok kısa ekranlarda telif satırı gizlenir (menü yerleşimi: home.css) */
+@media (max-height: 540px) { .copyright { display: none; } }

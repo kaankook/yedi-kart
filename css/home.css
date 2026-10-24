@@ -1,22 +1,16 @@
-/* home.css — ana menü (Apple tarzı: açık gri zemin, panelsiz hero, tek mavi vurgu) */
+/* home.css — ana menü
+   Minimal: düz zemin (--bg), tek vurgu rengi (--blue-strong), tek görsel: 7 kartlık deste.
+   Telefon: dikey, ortalı. Masaüstü / yatay telefon: iki sütun (metin : kart = φ : 1). */
 
 /* ======================================================================
    ANA MENÜ — tek ekrana sığar (kaydırma kilidi yok; çek-yenile çalışır)
    ====================================================================== */
 
-body:has(#screen-menu.active) { background: #f5f5f7; }
-html:has(#screen-menu.active) { background: #f5f5f7; }   /* aşırı kaydırmada görünen alan */
-
 .menu {
   --safe-t: max(16px, env(safe-area-inset-top));
   --safe-b: max(20px, env(safe-area-inset-bottom));
-  --m-ink: #1d1d1f;
-  --m-muted: #6e6e73;
-  --m-soft: #86868b;
-  --m-accent: #0071e3;
-  --m-accent-hover: #0077ed;
-  --m-fill: #e8e8ed;
-  --m-fill-hover: #dcdce1;
+  --m-accent: var(--blue-strong);
+  --m-accent-hover: #2f62c2;
   gap: clamp(8px, 2dvh, 16px);
   height: calc(100vh - var(--safe-t) - var(--safe-b));
   height: calc(100dvh - var(--safe-t) - var(--safe-b));
@@ -24,120 +18,167 @@ html:has(#screen-menu.active) { background: #f5f5f7; }   /* aşırı kaydırmada
 
 .menu-top { flex: none; display: flex; align-items: center; justify-content: space-between; }
 .brand { display: flex; align-items: center; gap: 10px; }   /* .brand-mark / .brand-name: components.css */
-.menu .brand-mark { background: var(--m-ink); box-shadow: none; }   /* yalnızca menüde düz koyu; diğer sayfalar etkilenmez */
-.menu .brand-name { font-weight: 700; letter-spacing: -0.02em; color: var(--m-ink); }
+.menu .brand-name { font-weight: 700; letter-spacing: -0.02em; }
 
-/* Hero panel: altın oran (φ ≈ 1,618).
-   İki bölge: üst (kartlar + başlık) : alt (açıklama + düğmeler) = 1,618 : 1 → ≈ %61,8 / %38,2.
-   Alt bölge içeriğinden küçük olamaz (minmax(min-content, …)); kısa ekranlarda oran yumuşakça bozulur,
-   hiçbir şey kırpılmaz. Aralıklar da aynı oranla ölçeklenir: --gap × φ. */
+/* ---------- Yerleşim (telefon): üst bölge kart, alt bölge metin = 1,618 : 1 ----------
+   Alt bölge içeriğinden küçük olamaz; kısa ekranlarda oran yumuşakça bozulur, hiçbir şey kırpılmaz. */
 .hero-panel {
-  --gap: clamp(10px, 2.2dvh, 20px);
+  --gap: clamp(12px, 2.4dvh, 22px);
   flex: 1 1 0; min-height: 0;
   display: grid; grid-template-rows: minmax(0, 1.618fr) minmax(min-content, 1fr);
-  padding: clamp(8px, 2dvh, 20px) clamp(4px, 2vw, 12px); text-align: center;
-  background: none; border: 0; box-shadow: none;   /* panel yok: içerik doğrudan zeminde */
+  justify-items: center; align-items: center;
+  padding: clamp(8px, 2dvh, 20px) clamp(4px, 2vw, 12px);
+  text-align: center;
 }
 
-.hero-zone {
-  min-height: 0; display: flex; flex-direction: column; align-items: center; justify-content: center;
-  gap: calc(var(--gap) * var(--phi));
+.hero-copy {
+  min-height: 0; max-width: 100%;
+  display: flex; flex-direction: column; align-items: center; gap: var(--gap);
 }
-.hero-zone > * { max-width: 100%; }
 
-/* Başlık: koyu, sıkı harf aralığı; ikinci satır sakin gri */
+/* ---------- Başlık ve açıklama ---------- */
 .hero-title {
   margin: 0; font-size: clamp(1.9rem, min(5.6dvh, 10vw), 2.8rem); font-weight: 700;
-  line-height: 1.08; letter-spacing: -0.035em; color: var(--m-ink); text-wrap: balance;
+  line-height: 1.08; letter-spacing: -0.035em; color: var(--ink); text-wrap: balance;
 }
 .hero-title .accent {
-  display: block;
-  color: var(--m-soft);
-  background: none;
-  -webkit-text-fill-color: currentColor;
+  display: block; color: var(--blue-strong);
+  background: none; -webkit-text-fill-color: currentColor;
 }
-
-/* Açıklama: başlıktan belirgin biçimde küçük ve sakin; satır uzunluğu okunur aralıkta */
 .hero-sub {
-  margin: 0; max-width: 30ch; color: var(--m-muted);
+  margin: 0; max-width: 30ch; color: var(--muted);
   font-size: clamp(0.95rem, 2.2dvh, 1.05rem); line-height: 1.5; text-wrap: balance;
 }
 
-/* Kart görseli: üç düz kart (yanlar beyaz, ortadaki mavi), ölçüler --ch'den türer */
-.hero { --ch: clamp(48px, 15dvh, 128px); position: relative; flex: none; height: calc(var(--ch) * 1.2); }
+/* ---------- Görsel: 7 kartlık deste ----------
+   Öndeki kart oyundaki kart arkasıyla aynı gradyan; arkadakiler açık tonlu kenar şeritleri.
+   Tüm ölçüler --ch'den (kart yüksekliği) türer. */
+.hero {
+  --ch: clamp(76px, 18dvh, 170px);
+  --step: calc(var(--ch) * 0.06);          /* kartlar arası görünen şerit */
+  position: relative; flex: none;
+  width: calc(var(--ch) * 0.78); height: calc(var(--ch) * 1.45);
+}
+.deck {
+  position: absolute; left: 0; right: 0; bottom: 0; height: var(--ch);
+  animation: deck-float 4.8s ease-in-out infinite;
+}
 .fcard {
-  position: absolute; bottom: 0; left: 50%;
-  width: calc(var(--ch) * 0.8); height: var(--ch); margin-left: calc(var(--ch) * -0.4);
-  display: grid; place-items: center; border-radius: calc(var(--ch) * 0.2);
-  font-size: calc(var(--ch) * 0.34); font-weight: 700; line-height: 1; color: #aeaeb2;
-  background: #ffffff;
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05), 0 12px 28px -10px rgba(0, 0, 0, 0.16);
-  transform-origin: 50% 120%;
+  position: absolute; inset: 0;
+  border-radius: calc(var(--ch) * 0.16);
+  background: var(--tint-blue); border: 1px solid var(--line-strong);
+  transform-origin: 50% 0;
+  translate: 0 calc(var(--k) * var(--step) * -1);
+  scale: calc(1 - var(--k) * 0.045);
+  z-index: calc(10 - var(--k));
 }
-.fcard.c1 { transform: translateX(calc(var(--ch) * -0.56)) rotate(-12deg); animation: float 4.2s ease-in-out infinite; }
-.fcard.c2 {
-  z-index: 2; background: var(--m-accent); color: #fff; font-size: calc(var(--ch) * 0.42);
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.06), 0 14px 30px -10px rgba(0, 113, 227, 0.45);
-  animation: float 4.2s ease-in-out -1.4s infinite;
+.fcard:nth-child(even) { background: var(--tint-lilac); }
+.fcard.front {
+  display: grid; place-items: center; border: 0;
+  background: linear-gradient(135deg, var(--blue), var(--lilac));
+  color: var(--blue-ink); font-size: calc(var(--ch) * 0.46); font-weight: 800; line-height: 1;
+  box-shadow: 0 1px 2px rgba(35, 52, 99, 0.06), 0 20px 40px -18px rgba(59, 115, 214, 0.5);
 }
-.fcard.c3 {
-  transform: translateX(calc(var(--ch) * 0.56)) rotate(12deg); animation: float 4.2s ease-in-out -2.8s infinite;
+.fcard.front::after {                       /* içeride ince çerçeve */
+  content: ""; position: absolute; inset: 7%; border-radius: calc(var(--ch) * 0.1);
+  border: 1.5px solid rgba(255, 255, 255, 0.7); pointer-events: none;
 }
-@keyframes float {
+@keyframes deck-float {
   0%, 100% { translate: 0 0; }
-  50% { translate: 0 -5px; }
+  50% { translate: 0 -6px; }
 }
 
-/* Düğmeler + alt not: başlık ve açıklamayla aynı ortalanmış sütunda */
+/* ---------- Düğmeler ---------- */
 .menu-actions {
-  width: min(100%, 340px);
-  display: flex; flex-direction: column; gap: calc(var(--gap) * 0.8); align-items: stretch;
+  width: min(100%, 360px);
+  margin-top: calc(var(--gap) * 0.618);     /* başlık→açıklama = gap, açıklama→düğme = gap × φ */
+  display: flex; flex-direction: column; align-items: stretch; gap: calc(var(--gap) * 0.8);
 }
 
-/* Oyuna Başla (mavi) + Nasıl Oynanır (gri): eş genişlik, eş yükseklik, yan yana; çok dar ekranda alt alta. */
-.play-row { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
+/* Oyuna Başla : Nasıl Oynanır = φ : 1; çok dar ekranda alt alta */
+.play-row { display: grid; grid-template-columns: minmax(0, 1.618fr) minmax(0, 1fr); gap: 10px; }
 .menu-actions .play-row .btn {
-  min-height: 52px; padding: 0 12px; border: 0; border-radius: 999px;
-  font-size: 0.98rem; font-weight: 600; letter-spacing: -0.01em; white-space: nowrap;
-  box-shadow: none;
+  min-height: 52px; padding: 0 12px; border-radius: 14px;
+  font-size: 0.94rem; font-weight: 600; letter-spacing: -0.01em; white-space: nowrap;
+  box-shadow: none; background-image: none;
 }
-.menu-actions .play-row .btn.primary { background: var(--m-accent); color: #fff; }
-.menu-actions .play-row .btn.light { background: var(--m-fill); color: var(--m-ink); }
+.menu-actions .play-row .btn.primary { border: 0; background: var(--m-accent); color: #fff; }
+.menu-actions .play-row .btn.primary::after {
+  content: "→"; content: "→" / "";
+  display: inline-block; margin-left: 8px; transition: translate 0.25s var(--ease-out);
+}
+.menu-actions .play-row .btn.light {
+  background: transparent; color: var(--ink); border: 1px solid var(--line-strong);
+}
 @media (max-width: 350px) { .play-row { grid-template-columns: 1fr; } }
-.foot { margin: 0; text-align: center; color: var(--m-muted); font-size: 0.82rem; line-height: 1.3; }
+
+.foot { margin: 0; text-align: center; color: var(--muted); font-size: 0.82rem; line-height: 1.3; }
 .menu-actions:has(.best:not(:empty)) .foot { display: none; }
-/* Rekor satırı: hap yok, sadece küçük yeşil metin */
 .menu-actions .best {
   margin: 0; padding: 0; background: none; box-shadow: none;
-  color: #248a3d; font-size: 0.9rem; font-weight: 600;
+  color: var(--muted); font-size: 0.88rem; font-weight: 600; font-variant-numeric: tabular-nums;
 }
 
-/* ---------- Ana sayfa hover etkileri ----------
-   Yalnızca imleçli cihazlarda çalışır (dokunmatikte "yapışan hover" kalmaz).
-   Konum/ölçek/dönüş için bağımsız translate, scale ve rotate özellikleri kullanılır:
-   transform ile (float, enter animasyonları, :active ölçeği) çakışmaz.
-   Azaltılmış hareket kapatmaları motion.css'te. */
+/* ---------- Hover (yalnızca imleçli cihazlarda) ----------
+   Bağımsız translate/scale/rotate özellikleri kullanılır: float ve giriş animasyonlarıyla çakışmaz. */
 @media (hover: hover) and (pointer: fine) {
-
-  /* Düğmeler: yalnızca renk değişir (yükselme, gölge ve ışık süpürmesi yok) */
-  .menu .btn { transition: background 0.2s ease, color 0.2s ease, transform 0.08s; }
+  .menu .btn { transition: background 0.2s ease, color 0.2s ease, border-color 0.2s ease, transform 0.08s; }
   .menu .btn:hover { translate: none; filter: none; }
   .menu-actions .play-row .btn.primary:hover { background: var(--m-accent-hover); }
-  .menu-actions .play-row .btn.light:hover { background: var(--m-fill-hover); color: var(--m-ink); }
+  .menu-actions .play-row .btn.primary:hover::after { translate: 3px 0; }
+  .menu-actions .play-row .btn.light:hover { background: var(--surface); border-color: var(--ink); }
 
-  /* Hero kartları: üst bölgeye gelince yelpaze açılır, ortadaki kart hafif büyür */
-  .fcard {
-    transition: rotate 0.5s var(--ease-out), scale 0.5s var(--ease-out), box-shadow 0.5s var(--ease-out);
-  }
-  .hero-zone--top:hover .fcard.c1 { rotate: -6deg; }
-  .hero-zone--top:hover .fcard.c3 { rotate: 6deg; }
-  .hero-zone--top:hover .fcard.c2 { scale: 1.06; }
+  /* Deste: üstüne ya da "Oyuna Başla"ya gelince kartlar aralanır */
+  .fcard { transition: translate 0.55s var(--ease-out); }
+  .hero:hover,
+  .hero-panel:has(.btn.primary:hover) .hero { --step: calc(var(--ch) * 0.075); }
 
-  /* Ses düğmesi: arkasında yumuşak gri daire belirir */
+  /* Ses düğmesi: arkasında yumuşak daire belirir */
   .menu .icon-btn::before {
     content: ""; position: absolute; inset: 0; z-index: -1; border-radius: 50%;
-    background: var(--m-fill); opacity: 0; scale: 0.6;
+    background: var(--tint-blue); opacity: 0; scale: 0.6;
     transition: opacity 0.2s, scale 0.3s var(--ease-out);
   }
   .menu .icon-btn:hover::before { opacity: 1; scale: 1; }
+}
+
+/* ======================================================================
+   Geniş ekran ve yatay telefon: iki sütun, metin solda (φ), kart sağda (1)
+   ====================================================================== */
+@media (min-width: 760px), (orientation: landscape) and (max-height: 520px) {
+  body:has(#screen-menu.active) .app { max-width: 960px; }
+
+  .hero-panel {
+    grid-template-rows: none; grid-template-columns: minmax(0, 1.618fr) minmax(0, 1fr);
+    column-gap: clamp(24px, 6vw, 96px); text-align: left; padding-inline: 0;
+    justify-items: stretch;
+  }
+  .hero { order: 2; justify-self: end; --ch: clamp(88px, 36dvh, 300px); }
+  .hero-copy { justify-self: start; align-items: flex-start; }
+  .hero-title { font-size: clamp(1.5rem, min(5vw, 8.5dvh), 3.9rem); }
+  .hero-sub { max-width: 34ch; }
+  .menu-actions { width: min(100%, 380px); }
+  .menu-actions .best, .foot { align-self: flex-start; text-align: left; }
+}
+
+/* ======================================================================
+   Kısa ekranlar: önce ikincil metinler gider, menü hep tek ekrana sığar
+   ====================================================================== */
+@media (max-height: 720px) { .foot { display: none; } }
+@media (max-height: 640px) { .hero-sub { display: none; } }
+@media (max-height: 540px) {
+  .hero { --ch: clamp(56px, 30dvh, 120px); }
+  .brand-mark { width: 30px; height: 30px; font-size: 1rem; }
+  .hero-panel { padding-top: 8px; padding-bottom: 8px; }
+}
+
+/* ======================================================================
+   Azaltılmış hareket (motion.css'teki genel kuralların tamamlayıcısı)
+   ====================================================================== */
+@media (prefers-reduced-motion: reduce) {
+  .deck { animation: none; }
+  .fcard { transition: none; }
+  .hero:hover, .hero-panel:has(.btn.primary:hover) .hero { --step: calc(var(--ch) * 0.06); }
+  .menu-actions .play-row .btn.primary::after { transition: none; }
+  .menu-actions .play-row .btn.primary:hover::after { translate: none; }
 }
