@@ -1,0 +1,51 @@
+/* motion.css — prefers-reduced-motion
+   HER ZAMAN EN SON yüklenir: eşit özgüllükteki animasyon kurallarını ezebilmesi buna bağlı.
+   Işık ve hareket hassasiyeti: flaş, sarsıntı ve çevirme/ölçekleme hareketleri kapanır.
+   Geri bildirim (renkler, metin, ses) olduğu gibi kalır. */
+
+@media (prefers-reduced-motion: reduce) {
+
+  /* Giriş animasyonu: kayma ve sıralama yok, kısa ve yumuşak bir belirme */
+  :root {
+    --enter-y: 0px; --enter-dur: 300ms; --enter-dur-slow: 300ms;
+    --enter-base: 0ms; --enter-step: 0ms; --enter-wave: 0;
+  }
+
+  /* Işık: kırmızı flaş hiç gösterilmez */
+  .flash, .flash.on { display: none; animation: none; }
+
+  /* Sarsıntı */
+  .screen.shake { animation: none; }
+
+  /* Kart çevirme: 3B dönüş yok, kart anında açılır/kapanır; yeniden karıştırma dalgası yok */
+  .card { transition: opacity 0.15s ease; }
+  .card-inner { transition: none; }
+  .card.closing { animation: none; transition-delay: 0s; }
+  .card.closing .card-inner { transition-delay: 0s; }
+  .card:not(.revealed):not(.peek):not(.closing):active .card-inner { transform: none; }
+
+  /* Skor, tur ve düğme vurguları */
+  .pill.bump, .score.bump { animation: none; }
+  .btn, .icon-btn, .ft-links a { transition: none; }
+  .btn:active:not(:disabled), .icon-btn:active { transform: none; }
+  body { transition: none; }
+  .fcard { animation: none; }
+
+  /* Combo: zıplamak yerine yalnızca belirir ve söner */
+  .combo-banner { transform: none; }
+  .combo-banner.show { animation: combo-fade 1.35s ease-out both; }
+  @keyframes combo-fade {
+    0% { opacity: 0; }
+    15%, 70% { opacity: 1; }
+    100% { opacity: 0; }
+  }
+
+  /* Game over: büyüme/kayma yok, öğeler yumuşakça belirir; yanıp sönen parıltılar sabit */
+  .gameover > *, .go-zero { animation: fade-in 0.3s ease both; }
+  .go-zero::after { animation: none; }
+  .card.doom .face.front::after { animation: none; opacity: 1; }
+
+  /* Diyaloglar */
+  .confirm[open], .confirm[open]::backdrop { animation: none; }
+  .howto[open] :is(.hw-stat, .hw-step) { animation: none; }
+}

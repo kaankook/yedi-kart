@@ -1,0 +1,43 @@
+/* intro.css — açılış animasyonu (sayfa ilk açıldığında)
+   <html class="intro"> ile başlar; ui/intro.js sınıfı animasyon bitince ya da ilk dokunuşta kaldırır.
+   Böylece ekran geçişleri ve tur yenilemeleri bu animasyonu tekrar oynatmaz.
+   Yalnızca opacity + translate kullanılır: GPU'da çalışır, iOS'ta akıcıdır.
+   Sıra: --i (öğe sırası) × --enter-step; kartlar mevcut --wave çapraz dalgasını izler.
+   (--enter-* değişkenleri ve @keyframes enter base.css'te) */
+
+.intro :is(
+  .menu-top, .hero-panel, .hero, .hero-title, .hero-sub,
+  .menu-actions .btn, .menu-actions .best, .menu-actions .foot,
+  .site-footer,
+  .game-head, .score-card, .last-op, .grid .card,
+  .screen:not(.gameover) > .row,
+  .screen > .title, .screen > .muted, .screen > .best, .screen > .picked
+) {
+  animation: enter var(--enter-dur) var(--enter-ease) backwards;   /* backwards: bitince öğenin kendi stiline döner */
+  animation-delay: var(--d, calc(var(--enter-base) + var(--i, 0) * var(--enter-step)));
+}
+
+/* Menü */
+.menu-top { --i: 0; }
+.hero-panel { --i: 1; }
+.hero { --i: 3; }
+.hero-title { --i: 4; }
+.hero-sub { --i: 5; }
+.menu-actions .btn { --i: 6; }
+.menu-actions .best, .menu-actions .foot { --i: 7; }
+.site-footer { --i: 10; }
+.intro .site-footer { animation-duration: var(--enter-dur-slow); }   /* 60 + 10×60 ≈ 640ms gecikme */
+
+/* Oyun (sayfa yenilendiğinde oyun sürüyorsa) */
+.game-head { --i: 0; }
+.score-card { --i: 1; }
+.grid .card { --d: calc(var(--enter-base) + 2 * var(--enter-step) + var(--wave, 0ms) * var(--enter-wave)); }
+.last-op { --i: 6; }
+#screen-game > .row { --i: 7; }
+
+/* Sonuç */
+#screen-result > .title { --i: 0; }
+#screen-result > .muted { --i: 2; }
+#screen-result > .best { --i: 3; }
+#screen-result > .picked { --i: 4; }
+#screen-result > .row { --i: 5; }

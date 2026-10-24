@@ -1,0 +1,83 @@
+/* ==========================================================
+   Yedi Kart: kart alanı (9 kartlık ızgara)
+   Yalnızca DOM'a dokunur; oyun durumunu bilmez, gereken değerler parametre gelir.
+   ========================================================== */
+
+import { $, $$ } from './dom.js';
+import { CARD_VALUES } from '../game.js';
+
+const cardEl = (index) => $(`#grid .card[data-index="${index}"]`);
+
+function setFace(btn, index, value) {
+  btn.classList.remove('closing');
+  btn.querySelector('.front').textContent = String(value);
+  btn.classList.toggle('neg', value < 0);
+  btn.classList.toggle('zero', value === 0);
+  btn.setAttribute('aria-label', `Kart ${index + 1}, açık: ${value}`);
+}
+
+// Izgara daha önce kurulduysa yeniden oluşturmaz, yalnızca kartları kapatır.
+export function buildGrid(cards) {
+  const grid = $('#grid');
+  grid.classList.remove('dead');
+  if (grid.children.length === CARD_VALUES.length) {
+    resetCards();
+    return;
+  }
+  grid.innerHTML = '';
+  cards.forEach((_, i) => {
+    const btn = document.createElement('button');
+    btn.type = 'button';
+    btn.className = 'card';
+    btn.style.setProperty('--wave', `${((i % 3) + Math.floor(i / 3)) * 35}ms`);
+    btn.dataset.index = String(i);
+    btn.setAttribute('aria-label', `Kart ${i + 1}, kapalı`);
+    btn.innerHTML =
+      '<span class="card-inner">' +
+      '<span class="face back" aria-hidden="true">?</span>' +
+      '<span class="face front"></span>' +
+      '</span>';
+    grid.appendChild(btn);
+  });
+}
+
+export function resetCards() {
+  $('#grid').classList.remove('dead');
+  $$('#grid .card').forEach((btn, i) => {
+    btn.className = 'card';
+    btn.querySelector('.front').textContent = '';
+    btn.setAttribute('aria-label', `Kart ${i + 1}, kapalı`);
+  });
+}
+
+// Seçilen kartı açar.
+export function revealCard(index, value) {
+  const btn = cardEl(index);
+  setFace(btn, index, value);
+  btn.classList.add('revealed', 'picked');
+}
+
+// Seçilmeyen diğer kartları yarı saydam açar (FOMO etkisi).
+export function peekOthers(cards, except) {
+  cards.forEach((card, i) => {
+    if (i === except) return;
+    const btn = cardEl(i);
+    if (!btn) return;
+    setFace(btn, i, card.value);
+    btn.classList.add('revealed', 'peek');
+  });
+}
+
+// Çapraz dalgayla kapanış; yeniden karıştırma ui akışında resetCards ile tamamlanır.
+export function closeAllCards() {
+  $$('#grid .card').forEach((btn) => {
+    btn.classList.add('closing');
+    btn.classList.remove('revealed', 'peek');
+  });
+}
+
+// Sıfır açıldı: kartı vurgula, kalan kapalı kartları söndür.
+export function markDoom(index) {
+  cardEl(index).classList.add('doom');
+  $('#grid').classList.add('dead');
+}

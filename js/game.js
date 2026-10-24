@@ -1,17 +1,15 @@
-'use strict';
-
 /* ==========================================================
-   Yedi Kart: oyun mantığı (DOM'dan ve sesten bağımsız)
+   Yedi Kart: oyun mantığı (DOM'dan, sesten ve depolamadan bağımsız)
    Kural: skor 1 ile başlar, seçilen kartın değeriyle çarpılır.
    Aynı sayıyı üst üste seçersen COMBO olur ve çarpan büyür.
    0 açılırsa oyun anında biter; 7 turu tamamlarsan skorun kalır.
    ========================================================== */
 
-const TOTAL_ROUNDS = 7;
-const START_SCORE = 1;
-const CARD_VALUES = [-1, 0, 1, 2, 3, 4, 5, 6, 7];
+export const TOTAL_ROUNDS = 7;
+export const START_SCORE = 1;
+export const CARD_VALUES = [-1, 0, 1, 2, 3, 4, 5, 6, 7];
 
-function shuffle(array, rng = Math.random) {
+export function shuffle(array, rng = Math.random) {
   const a = array.slice();
   for (let i = a.length - 1; i > 0; i--) {
     const j = Math.floor(rng() * (i + 1));
@@ -21,20 +19,20 @@ function shuffle(array, rng = Math.random) {
 }
 
 // JS'te 0 * -1 === -0 olur; ekranda ve karşılaştırmada sorun çıkmasın diye normalize et.
-function normalize(n) {
+export function normalize(n) {
   return n === 0 ? 0 : n;
 }
 
-function fmt(n) {
+export function fmt(n) {
   return normalize(n).toLocaleString('tr-TR');
 }
 
-function totalScore(state) {
+export function totalScore(state) {
   if (!state) return 0;
   return normalize(state.score);
 }
 
-function comboCount(picks) {
+export function comboCount(picks) {
   if (!Array.isArray(picks)) return 0;
   if (picks.length < 2) return 0;
   const last = picks[picks.length - 1];
@@ -43,16 +41,16 @@ function comboCount(picks) {
   return combo >= 2 ? combo : 0;
 }
 
-function comboLabel(state) {
+export function comboLabel(state) {
   const combo = comboCount(state && state.picks);
   return combo ? `COMBO x${combo}` : '';
 }
 
-function dealCards(rng = Math.random) {
+export function dealCards(rng = Math.random) {
   return shuffle(CARD_VALUES, rng).map((value) => ({ value, revealed: false }));
 }
 
-function newGame(rng = Math.random) {
+export function newGame(rng = Math.random) {
   return {
     cards: dealCards(rng),
     picks: [],                // seçilen değerler, sırayla
@@ -68,13 +66,13 @@ function newGame(rng = Math.random) {
 }
 
 // Her turdan sonra 9 kartın tamamı (seçilen dahil) kapanır ve yeniden karışır.
-function nextRound(state, rng = Math.random) {
+export function nextRound(state, rng = Math.random) {
   if (!state || state.finished || !state.locked) return state;
   return { ...state, cards: dealCards(rng), locked: false, round: state.picks.length + 1 };
 }
 
 // Başarılıysa yeni durumu, geçersizse null döndürür. Hiçbir şeyi yarım güncellemez.
-function pickCard(state, index) {
+export function pickCard(state, index) {
   if (!state || state.finished || state.locked) return null;
   const card = state.cards[index];
   if (!card || card.revealed) return null;
@@ -106,14 +104,5 @@ function pickCard(state, index) {
     busted,
     locked: true,
     lastOp: op,
-  };
-}
-
-/* Node ile test edebilmek için */
-if (typeof module !== 'undefined' && module.exports) {
-  module.exports = {
-    TOTAL_ROUNDS, START_SCORE, CARD_VALUES,
-    shuffle, newGame, pickCard, totalScore, nextRound, normalize, fmt,
-    comboCount, comboLabel,
   };
 }

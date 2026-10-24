@@ -1,0 +1,77 @@
+/* base.css — tasarım değişkenleri, reset, body, .app, tipografi, ekran iskeleti */
+
+:root {
+  --bg: #fbf8f2;
+  --surface: #ffffff;
+  --ink: #1f2a44;
+  --muted: #55607a;         /* küçük gri yazılar; krem zeminde ~5,9:1, beyazda ~6,3:1 (WCAG AA) */
+  --blue: #a9d3f5;
+  --blue-strong: #4a90d9;
+  --mint: #bfe9d6;
+  --mint-strong: #2f9e75;
+  --lilac: #d8cdf7;
+  --lilac-strong: #7b5fd0;
+  --neg: #d9534f;
+  --line: #e8e3d8;
+  --shadow: 0 6px 16px rgba(31, 42, 68, 0.10);
+  --radius: 18px;
+  --flip: 380ms;            /* kart çevirme süresi (FLIP_MS bunu ezer) */
+
+  /* Giriş animasyonu ölçüleri (intro.css ve howto.css birlikte kullanır) */
+  --enter-ease: cubic-bezier(0.22, 1, 0.36, 1);   /* easeOutQuint: hızlı başlar, yumuşak oturur */
+  --enter-dur: 640ms;
+  --enter-y: 14px;
+  --enter-base: 60ms;
+  --enter-step: 60ms;
+  --enter-wave: 1.4;
+  --enter-dur-slow: 820ms;
+}
+
+* { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+button { touch-action: manipulation; }
+
+html, body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--ink);
+  font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  min-height: 100vh;
+  min-height: 100dvh;
+  padding: max(16px, env(safe-area-inset-top)) max(16px, env(safe-area-inset-right))
+           max(20px, env(safe-area-inset-bottom)) max(16px, env(safe-area-inset-left));
+  transition: background 0.45s ease;
+}
+body.dark {
+  background: radial-gradient(ellipse at 50% 18%, #4a1018 0%, #1a0b12 55%, #0d060a 100%);
+  color: #fff;
+}
+
+.app { width: 100%; max-width: 420px; margin: 0 auto; }
+
+/* JavaScript kapalıyken görünen mesaj (index.html'deki <noscript>) */
+.noscript {
+  max-width: 420px; margin: 18vh auto 0; padding: 26px 22px; text-align: center;
+  background: var(--surface); border-radius: 22px; box-shadow: var(--shadow);
+}
+.noscript h1 { margin: 0 0 10px; font-size: 1.8rem; letter-spacing: -0.5px; }
+.noscript p { margin: 0; font-size: 1.05rem; line-height: 1.5; }
+
+/* Ekran iskeleti */
+.screen { display: none; flex-direction: column; gap: 16px; }
+.screen.active { display: flex; }
+
+/* Tipografi */
+.title { margin: 0; font-size: 2rem; text-align: center; letter-spacing: -0.5px; }
+.title.small { font-size: 1.3rem; text-align: left; }
+.title.big { font-size: 2.8rem; line-height: 1.05; letter-spacing: -1px; }
+.muted { margin: 0; text-align: center; color: var(--muted); }
+.label { font-size: 0.75rem; font-weight: 700; letter-spacing: 1px; color: var(--muted); text-transform: uppercase; }
+
+/* Ortak giriş keyframe'i: intro.css ve howto.css kullanır */
+@keyframes enter {
+  from { opacity: 0; translate: 0 var(--enter-y); }
+}

@@ -1,0 +1,102 @@
+/* components.css — ekranlar arasında paylaşılan parçalar:
+   .btn, .row, .icon-btn, .pill, .score-card, .best, .confirm (dialog) */
+
+/* ---------- Butonlar ---------- */
+.btn {
+  min-height: 52px; padding: 0 20px; border: 0; border-radius: 16px;
+  font: inherit; font-size: 1.05rem; font-weight: 700; cursor: pointer;
+  transition: transform 0.08s, filter 0.15s, background 0.2s, opacity 0.2s;
+}
+.btn:active:not(:disabled) { transform: scale(0.97); }
+.btn:disabled { cursor: default; opacity: 0.5; }
+.btn.primary { background: var(--blue-strong); color: #fff; }
+.btn.primary.big {
+  min-height: 62px; font-size: 1.25rem; border-radius: 20px;
+  background: linear-gradient(135deg, #4a90d9, #7b5fd0);
+  box-shadow: 0 10px 22px rgba(74, 90, 217, 0.35);
+}
+.btn.secondary { background: var(--mint); color: #145a42; }
+.btn.ghost { background: transparent; color: var(--ink); border: 2px solid var(--line); }
+.btn.light {
+  padding: 0 16px; font-size: 1rem; border-radius: 18px;
+  background: var(--surface); color: var(--ink);
+  box-shadow: 0 4px 12px rgba(31, 42, 68, 0.08);
+}
+@media (hover: hover) { .btn.light:hover { filter: brightness(0.97); } }
+.btn.danger-btn { background: #ff5a52; color: #fff; box-shadow: 0 10px 22px rgba(255, 70, 60, 0.35); }
+.btn.ghost-dark { background: transparent; color: #fff; border: 2px solid rgba(255, 255, 255, 0.3); }
+
+.row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.row .btn { width: 100%; }
+
+/* ---------- İkon düğmesi ----------
+   Ses düğmesi: çerçevesiz, arka plansız; yalnızca ikon (dialed.gg ölçüleri) */
+.icon-btn {
+  --dim: #0000008c;
+  position: relative; z-index: 1;
+  width: 32px; height: 32px; margin: 0 -6px; padding: 0;
+  display: grid; place-items: center;
+  background: none; border: 0; cursor: pointer;
+  color: var(--dim); transition: color 0.2s;
+}
+@media (hover: hover) { .icon-btn:hover { color: var(--ink); } }
+.icon-btn:active { color: var(--ink); }
+.icon-btn:focus-visible { outline: 3px solid var(--blue-strong); outline-offset: 2px; border-radius: 8px; }
+.icon-btn svg { width: 20px; height: 20px; display: block; }
+
+/* ---------- Tur rozeti ---------- */
+.pill {
+  padding: 8px 14px; border-radius: 999px; background: var(--lilac);
+  color: #3d2c85; font-weight: 800; font-size: 0.95rem;
+  font-variant-numeric: tabular-nums;
+}
+.pill.bump { animation: bump 0.3s ease; }
+
+/* ---------- Skor kartı ---------- */
+.score-card {
+  display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px;
+  padding: 12px 10px; background: var(--surface); border-radius: var(--radius);
+  box-shadow: var(--shadow);
+}
+.score-card.big { padding: 22px 14px; }
+.score { font-size: 2.9rem; font-weight: 800; line-height: 1; font-variant-numeric: tabular-nums; }
+.score.neg { color: var(--neg); }
+.score.bump { animation: bump 0.3s ease; }
+.score-card.big .score { font-size: 4.2rem; }
+
+.score-breakdown {
+  margin-top: 4px; font-size: 0.92rem; font-weight: 700; color: var(--muted);
+  font-variant-numeric: tabular-nums;
+}
+.score-breakdown:empty { display: none; }
+
+@keyframes bump { 0% { transform: scale(1); } 40% { transform: scale(1.15); } 100% { transform: scale(1); } }
+
+/* ---------- Rekor rozeti (menü, sonuç, game over) ---------- */
+.best {
+  margin: 0; align-self: center; padding: 8px 16px; border-radius: 999px;
+  background: var(--mint); color: #145a42; font-weight: 800; font-size: 0.95rem;
+}
+.best:empty { display: none; }
+.best.dark { background: rgba(255, 255, 255, 0.12); color: #ffd7d4; }
+
+/* ---------- Onay kutusu (<dialog class="confirm">) ---------- */
+.confirm {
+  width: calc(100% - 40px); max-width: 340px; padding: 22px 20px;
+  border: 0; border-radius: 22px;
+  background: var(--surface); color: var(--ink);
+  box-shadow: 0 16px 36px rgba(31, 42, 68, 0.22);
+}
+.confirm[open] { animation: modal-pop 0.24s cubic-bezier(0.2, 1.3, 0.4, 1); }
+.confirm::backdrop {
+  background: rgba(31, 42, 68, 0.45);
+  backdrop-filter: blur(4px); -webkit-backdrop-filter: blur(4px);
+}
+.confirm[open]::backdrop { animation: fade-in 0.2s ease; }
+.confirm form { margin: 0; display: flex; flex-direction: column; gap: 16px; }
+.confirm p {
+  margin: 0; text-align: center; font-size: 1.1rem; font-weight: 700; line-height: 1.4;
+}
+
+@keyframes fade-in { from { opacity: 0; } to { opacity: 1; } }
+@keyframes modal-pop { from { transform: scale(0.9); opacity: 0; } to { transform: scale(1); opacity: 1; } }

@@ -1,22 +1,17 @@
-'use strict';
-
 /* ==========================================================
    Yedi Kart: ses (Web Audio; harici dosya yok)
    Dışarıya yalnızca GameAudio nesnesini açar.
+   Ses tercihi storage.js üzerinden saklanır.
    ========================================================== */
 
-const GameAudio = (() => {
-  const MUTE_KEY = 'yedikart.muted';
+import { loadMuted, saveMuted } from './storage.js';
 
+export const GameAudio = (() => {
   let muted = loadMuted();
   let audioCtx = null;
   let primed = false;       // iOS: AudioContext tek seferlik boş tamponla "ısıtıldı" mı
   let sessionSet = false;
   let silentEl = null;      // iOS sessiz modunda Web Audio'yu duyurmak için sessiz döngü
-
-  function loadMuted() {
-    try { return localStorage.getItem(MUTE_KEY) === '1'; } catch (e) { return false; }
-  }
 
   /* ---------- Sessiz döngü (yalnızca navigator.audioSession yoksa) ---------- */
 
@@ -186,7 +181,7 @@ const GameAudio = (() => {
 
   function toggleMute() {
     muted = !muted;
-    try { localStorage.setItem(MUTE_KEY, muted ? '1' : '0'); } catch (e) { /* sessiz geç */ }
+    saveMuted(muted);
     if (muted) {
       pauseSilent();
     } else {
