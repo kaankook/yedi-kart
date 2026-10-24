@@ -54,6 +54,13 @@
   .gameover > *, .go-zero { animation: fade-in 0.3s ease both; }
   .go-zero::after { animation: none; }
   .card.doom .face.front::after { animation: none; opacity: 1; }
+  #screen-result > *, #screen-result > .score-card, #screen-result > .row .btn,
+  .gameover .go-lost, .gameover .go-actions .btn, .picked-item:not(.ghost) {
+    transition: none;
+  }
+  #screen-result > *, #screen-result > .score-card { animation: fade-in 0.3s ease both; }
+  .picked-item:not(.ghost):hover, #screen-result > .score-card:hover,
+  .gameover .go-lost:hover { translate: none; }
 
   /* Diyaloglar */
   .confirm[open], .confirm[open]::backdrop { animation: none; }

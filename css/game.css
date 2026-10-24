@@ -1,0 +1,144 @@
+/* game.css — oyun ekranı ve kart tahtası */
+/* ======================================================================
+   OYUN EKRANI
+   ====================================================================== */
+
+.game-head { display: flex; align-items: center; justify-content: space-between; }
+.head-right { display: flex; align-items: center; gap: 8px; }
+
+/* Kart alanı */
+.grid {
+  display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--g, 12px);
+  width: var(--board-w, min(100%, 380px)); max-width: 100%; margin: 0 auto;
+}
+
+/* Oyun ekranı*/
+#screen-game {
+  --g: clamp(8px, 1.6dvh, 14px);
+  --g2: calc(var(--g) * var(--phi));
+  --g3: calc(var(--g2) * var(--phi));
+  --game-gap: var(--g);
+  --board-w: min(380px, 100%, max(240px, calc(100dvh - 19.5rem)));
+}
+#screen-game.active {
+  display: grid; grid-template-columns: minmax(0, 1fr);
+  grid-template-rows: auto minmax(0, 1fr) auto 0 auto auto minmax(0, 1.618fr) auto;
+  align-content: start; gap: 0;
+  min-height: calc(100dvh - 40px);
+}
+#screen-game { justify-items: center; }
+#screen-game > .game-head,
+#screen-game > .score-card,
+#screen-game > .combo-banner,
+#screen-game > .grid,
+#screen-game > .game-picked,
+#screen-game > .row { width: var(--board-w); max-width: 100%; }
+#screen-game > .game-head { grid-row: 1; margin-bottom: var(--g2); }
+#screen-game > .score-card { grid-row: 3; }
+#screen-game > .combo-banner { grid-row: 4; }
+#screen-game > .grid { grid-row: 5; margin-top: var(--g2); }
+#screen-game > .game-picked { grid-row: 6; margin-top: var(--g2); }
+#screen-game > .row { grid-row: 8; margin-top: var(--g2); }
+
+.card {
+  position: relative; aspect-ratio: 1 / 1; padding: 0; border: 0;
+  background: none; -webkit-perspective: 700px; perspective: 700px; cursor: pointer; font: inherit;
+  -webkit-appearance: none; appearance: none;
+  transition: opacity 0.28s ease, transform 0.28s ease;
+}
+.card-inner {
+  position: absolute; inset: 0;
+  -webkit-transform-style: preserve-3d; transform-style: preserve-3d;
+  transition: transform var(--flip) cubic-bezier(0.25, 0.8, 0.25, 1);
+  will-change: transform;
+}
+.card.revealed .card-inner,
+.card.peek .card-inner { -webkit-transform: rotateY(180deg); transform: rotateY(180deg); }
+.card:not(.revealed):not(.peek):not(.closing):active .card-inner { transform: scale(0.95); }
+
+/* Yeni tura geçerken: kapanış seçilen karttan dışarı doğru yayılır ve kartlar hafifçe yerinde karışır */
+.card.closing {
+  pointer-events: none;
+  transition-delay: var(--wave, 0ms);
+  animation: redeal var(--flip) cubic-bezier(0.25, 0.8, 0.25, 1) var(--wave, 0ms);
+}
+.card.closing .card-inner {
+  transition-delay: var(--wave, 0ms);
+}
+@keyframes redeal {
+  0%, 100% { translate: 0 0; }
+  45% { translate: 0 -5px; }
+}
+
+.face {
+  position: absolute; inset: 0; display: grid; place-items: center;
+  border-radius: var(--radius); backface-visibility: hidden; -webkit-backface-visibility: hidden;
+  box-shadow: var(--shadow);
+}
+.face.back {
+  background: linear-gradient(135deg, var(--blue), var(--lilac));
+  color: rgba(255, 255, 255, 0.95); font-size: 2.2rem; font-weight: 800;
+}
+.face.front {
+  -webkit-transform: rotateY(180deg); transform: rotateY(180deg);
+  background: var(--surface); border: 3px solid var(--line);
+  font-size: clamp(2rem, 11vw, 2.8rem); font-weight: 800; font-variant-numeric: tabular-nums;
+}
+.card.revealed, .card.peek { cursor: default; }
+
+/* Renk sınıfları (.picked, .neg, .zero) kapanış dönüşü bitene kadar korunduğu için renk sıçraması olmaz */
+.card.picked .face.front { border-color: var(--mint-strong); background: var(--tint-mint); }
+.card.neg .face.front,
+.card.zero .face.front { border-color: var(--neg); background: var(--tint-neg); color: var(--neg); }
+
+/* FOMO Etkisi: seçilmeyen diğer 8 kartın yarı saydam açılışı */
+.card.peek {
+  opacity: 0.42;
+  transform: scale(0.94);
+  pointer-events: none;
+}
+
+/* Sıfır açıldı */
+.card.doom .face.front {
+  border-color: var(--neg); background: #fdecea; color: var(--neg);
+}
+.card.doom .face.front::after {
+  content: ""; position: absolute; inset: 0; border-radius: inherit; pointer-events: none;
+  box-shadow: 0 0 0 8px rgba(217, 83, 79, 0.35), 0 0 30px 10px rgba(217, 83, 79, 0.6);
+  opacity: 0; animation: doom-glow 0.55s ease 2;
+}
+@keyframes doom-glow { 50% { opacity: 1; } }
+.grid.dead .card:not(.revealed) { opacity: 0.32; transform: scale(0.93); filter: grayscale(0.45); pointer-events: none; }
+.screen.shake { animation: shake 0.5s ease; }
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  12% { transform: translateX(-12px); } 25% { transform: translateX(11px); }
+  38% { transform: translateX(-9px); }  52% { transform: translateX(7px); }
+  66% { transform: translateX(-4px); }  80% { transform: translateX(2px); }
+}
+.flash {
+  position: fixed; inset: 0; z-index: 50; pointer-events: none; opacity: 0; will-change: opacity;
+  background: radial-gradient(ellipse at center, rgba(255, 60, 50, 0.55), rgba(120, 0, 10, 0.75));
+}
+.flash.on { animation: flash 0.95s ease-out; }
+@keyframes flash { 0% { opacity: 0; } 12% { opacity: 1; } 100% { opacity: 0; } }
+
+.combo-banner {
+  height: 0; margin: 0; overflow: visible; position: relative; z-index: 2;
+  display: flex; align-items: center; justify-content: center;   /* görününce yerleşim kaymaz */
+  color: var(--lilac-strong);
+  font-size: 1.7rem;
+  font-weight: 900;
+  line-height: 1;
+  text-align: center;
+  opacity: 0;
+  transform: scale(0.65) translateY(8px);
+  pointer-events: none;
+}
+.combo-banner.show { animation: combo-pop 1.35s ease-out both; }
+@keyframes combo-pop {
+  0% { opacity: 0; transform: scale(0.65) translateY(8px); }
+  22% { opacity: 1; transform: scale(1.18) translateY(0); }
+  45% { transform: scale(0.98) translateY(0); }
+  100% { opacity: 0; transform: scale(1) translateY(-10px); }
+}

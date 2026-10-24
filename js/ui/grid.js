@@ -68,9 +68,13 @@ export function peekOthers(cards, except) {
   });
 }
 
-// Çapraz dalgayla kapanış; yeniden karıştırma ui akışında resetCards ile tamamlanır.
-export function closeAllCards() {
+// Seçilen karttan dışarı yayılan kapanış; yeniden karıştırma ui akışında resetCards ile tamamlanır.
+export function closeAllCards(selectedIndex) {
   $$('#grid .card').forEach((btn) => {
+    const index = Number(btn.dataset.index);
+    const distance = Math.abs((index % 3) - (selectedIndex % 3))
+      + Math.abs(Math.floor(index / 3) - Math.floor(selectedIndex / 3));
+    btn.style.setProperty('--wave', `${distance * 35}ms`);
     btn.classList.add('closing');
     btn.classList.remove('revealed', 'peek');
   });

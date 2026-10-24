@@ -1,0 +1,212 @@
+/* result.css — seçilen kartlar ve sonuç görünümü */
+/* ======================================================================
+   SONUÇ EKRANI
+   ====================================================================== */
+
+#screen-result {
+  --result-gap: clamp(10px, 2.2dvh, 18px);
+  position: relative;
+  align-items: center;
+  min-height: calc(100dvh - 40px);
+  padding: clamp(18px, 4dvh, 36px) 0;
+  overflow: hidden;
+  isolation: isolate;
+}
+#screen-result::before,
+#screen-result::after {
+  content: "";
+  position: absolute;
+  z-index: -1;
+  border-radius: 50%;
+  pointer-events: none;
+  filter: blur(2px);
+}
+#screen-result::before {
+  width: 280px;
+  height: 280px;
+  top: -120px;
+  right: -150px;
+  background: var(--tint-lilac);
+  opacity: 0.9;
+}
+#screen-result::after {
+  width: 230px;
+  height: 230px;
+  bottom: -110px;
+  left: -140px;
+  background: var(--tint-mint);
+  opacity: 0.85;
+}
+#screen-result > .title {
+  position: relative;
+  margin: 0;
+  color: var(--ink);
+  font-size: clamp(1.8rem, 6vw, 2.35rem);
+  letter-spacing: -0.045em;
+  animation: result-rise 0.6s var(--ease-out) both;
+}
+#screen-result > .title::after {
+  content: "";
+  display: block;
+  width: 42px;
+  height: 4px;
+  margin: 12px auto 0;
+  border-radius: 999px;
+  background: linear-gradient(90deg, var(--blue-strong), var(--lilac-strong));
+}
+#screen-result > .score-card {
+  width: min(100%, 360px);
+  padding: clamp(24px, 4dvh, 34px) 18px;
+  border: 1px solid rgb(255 255 255 / 0.8);
+  border-radius: 28px;
+  background: rgb(255 255 255 / 0.84);
+  box-shadow: 0 18px 40px rgba(35, 52, 99, 0.12);
+  animation: result-rise 0.65s var(--ease-out) 80ms both;
+  transition: translate 0.35s var(--ease-out), box-shadow 0.35s var(--ease-out);
+}
+#screen-result > .score-card:hover {
+  translate: 0 -5px;
+  box-shadow: 0 24px 48px rgba(35, 52, 99, 0.18);
+}
+#screen-result > .score-card .label {
+  color: var(--blue-ink);
+  letter-spacing: 0.14em;
+}
+#screen-result > .score-card .score {
+  margin-top: 8px;
+  color: var(--ink);
+  font-size: clamp(3.4rem, 15vw, 5.1rem);
+  letter-spacing: -0.07em;
+  line-height: 0.95;
+}
+#screen-result > .score-card .score-breakdown {
+  margin-top: 12px;
+  min-height: 1.15em;
+  color: var(--lilac-strong);
+}
+#screen-result > .muted {
+  margin: -2px 0 0;
+  font-size: 0.95rem;
+  animation: result-rise 0.6s var(--ease-out) 160ms both;
+}
+#screen-result > .best {
+  margin: -2px 0 0;
+  padding: 9px 18px;
+  background: var(--mint);
+  box-shadow: 0 7px 16px rgba(37, 143, 105, 0.14);
+  animation: result-rise 0.6s var(--ease-out) 220ms both;
+  transition: translate 0.3s var(--ease-out), box-shadow 0.3s ease;
+}
+#screen-result > .best:hover {
+  translate: 0 -2px;
+  box-shadow: 0 10px 22px rgba(37, 143, 105, 0.2);
+}
+#screen-result > .picked {
+  width: min(100%, 360px);
+  gap: 8px;
+  margin-top: 2px;
+  animation: result-rise 0.6s var(--ease-out) 280ms both;
+}
+#screen-result > .picked > .label {
+  padding-left: 2px;
+  color: var(--blue-ink);
+}
+#screen-result > .row {
+  width: min(100%, 360px);
+  margin-top: 2px;
+  animation: result-rise 0.6s var(--ease-out) 360ms both;
+}
+#screen-result > .row .btn {
+  min-height: 56px;
+  border-radius: 18px;
+  transition: translate 0.28s var(--ease-out), box-shadow 0.28s var(--ease-out),
+    background 0.2s, color 0.2s, border-color 0.2s, transform 0.08s;
+}
+#screen-result > .row .btn:hover {
+  translate: 0 -3px;
+}
+#screen-result > .row .btn.primary:hover {
+  box-shadow: 0 12px 24px rgba(59, 115, 214, 0.3);
+}
+#screen-result > .row .btn.ghost:hover {
+  color: var(--blue-ink);
+  border-color: var(--blue-strong);
+  background: var(--tint-blue);
+}
+
+@keyframes result-rise {
+  from { opacity: 0; translate: 0 14px; }
+  to { opacity: 1; translate: 0 0; }
+}
+
+/* Seçilen kartlar: kutusuz, ince çizgili küçük hücreler. Her tur için bir yuva ayrılır;
+   boş yuvalar silik kesikli çizgidir. Izgara olduğu için 7 hücre hep tek satırda kalır, yer değiştirmez. */
+.picked {
+  --pick-bg: #f9fafd; --pick-line: #e4e8f3;            /* #F4F6FB'den hafif açık */
+  --pick-neg-bg: #fbf7f9; --pick-neg-line: #f1e0e4;
+  display: flex; flex-direction: column; gap: 6px;
+  width: var(--board-w, min(100%, 380px)); max-width: 100%; margin-inline: auto;
+}
+.picked > .label {
+  font-size: 0.68rem; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase;
+  color: var(--muted); opacity: 0.85;
+}
+.picked-list {
+  display: flex; flex-wrap: nowrap; align-items: center; gap: 4px;
+  width: 100%; min-width: 0;
+}
+.picked-item {
+  --ring: var(--blue-strong);
+  flex: 1 1 0; min-width: 0; aspect-ratio: 1 / 1; position: relative;   /* kare hücre */
+  display: grid; place-items: center; padding: 0;
+  font-size: 0.88rem; font-weight: 600; line-height: 1; white-space: nowrap; font-variant-numeric: tabular-nums;
+  border-radius: 9px;
+  /* soft palet: zemin #F4F6FB; yazı mürekkebin ~%68'i (color-mix yoksa düz renk) */
+  color: var(--muted);
+  color: color-mix(in srgb, var(--ink) 68%, transparent);
+  background: var(--pick-bg); border: 1px solid var(--pick-line);
+  transition: translate 0.25s var(--ease-out), box-shadow 0.25s ease, border-color 0.2s ease;
+}
+.picked-item:not(.ghost):hover {
+  translate: 0 -3px;
+  border-color: var(--blue-strong);
+  box-shadow: 0 7px 14px rgba(59, 115, 214, 0.14);
+}
+.picked-item.neg {
+  --ring: var(--neg);
+  color: var(--neg);
+  color: color-mix(in srgb, var(--neg) 78%, transparent);
+  background: var(--pick-neg-bg); border-color: var(--pick-neg-line);
+}
+/* Açılmamış yuvalar görünmez: yer tutarlar (hücre boyutu ve yerleşim sabit kalır) ama ekranda yoktur. */
+.picked-item.ghost, .picked-arrow.ghost { visibility: hidden; }
+
+.picked-arrow {
+  flex: none; color: var(--blue-strong); font-size: 0.72rem; line-height: 1; opacity: 0.75;
+  transform-origin: left center;
+}
+
+/* Yeni seçim, sırayla üç adımda belirir:
+   1) ok soldan çizilir  2) hücre kendi rengiyle yaylanarak (hafif taşarak) yerine oturur
+   3) hücrenin etrafında tek bir halka yayılıp söner. */
+.picked-arrow.is-new { animation: pick-arrow 0.26s var(--ease-out) both; }
+.picked-item.is-new {
+  animation: pick-chip 0.38s cubic-bezier(0.34, 1.56, 0.64, 1) 0.1s both;
+}
+.picked-item.is-new::after {
+  content: ""; position: absolute; inset: -1px; border-radius: inherit; pointer-events: none;
+  animation: pick-ring 0.5s var(--ease-out) 0.28s both;
+}
+@keyframes pick-arrow {
+  from { opacity: 0; scale: 0.4 1; translate: -6px 0; }
+  to   { opacity: 0.75; scale: 1 1; translate: 0 0; }
+}
+@keyframes pick-chip {
+  from { opacity: 0; scale: 0.55; translate: -8px 0; }
+  to   { opacity: 1; scale: 1; translate: 0 0; }
+}
+@keyframes pick-ring {
+  from { opacity: 1; box-shadow: 0 0 0 0 color-mix(in srgb, var(--ring) 45%, transparent); }
+  to   { opacity: 0; box-shadow: 0 0 0 9px transparent; }
+}
+@media (prefers-reduced-motion: reduce) { .is-new, .is-new::after { animation: none; } }

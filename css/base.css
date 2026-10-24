@@ -80,7 +80,9 @@ body {
   transition: background 0.45s ease;
 }
 body.dark {
-  background: radial-gradient(ellipse at 50% 18%, #4a1018 0%, #1a0b12 55%, #0d060a 100%);
+  background:
+    radial-gradient(circle at 50% -12%, rgba(93, 116, 177, 0.34), transparent 38%),
+    linear-gradient(145deg, #111827 0%, #1c2438 54%, #241d31 100%);
   color: #fff;
 }
 

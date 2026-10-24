@@ -1,0 +1,64 @@
+/* footer.css — site footer */
+/* ---------- Footer ---------- */
+.site-footer {
+  --ft-dim: #00000047;        /* yazı rengi */
+  --ft-dim2: #00000057;       /* marka adı: bir ton koyu */
+  --ft-hover: #0000008c;
+  flex: none; display: flex; flex-direction: column; align-items: flex-start; gap: 0; padding: 0 0 2px;
+  font-size: 10.5px; letter-spacing: -0.1px; color: var(--ft-dim);
+  transition: color 0.56s ease;
+  -webkit-font-smoothing: antialiased;
+}
+.ft-row { display: flex; align-items: center; flex-wrap: wrap; column-gap: 12px; }  /* 12 + link dolgusu 6 = 18px */
+.ft-brand {
+  display: inline-flex; align-items: center; gap: 7px; min-height: 36px;
+  color: var(--ft-dim2); font-size: 11.5px; font-weight: 600;
+}
+.ft-mark {
+  width: 14px; height: 14px; display: grid; place-items: center; flex: none;
+  border: 1.3px solid currentColor; border-radius: 4.5px; font-size: 8.5px; font-weight: 800; line-height: 1;
+}
+.ft-links { display: flex; align-items: center; flex-wrap: wrap; gap: 6px; }          /* 6 + 6 + 6 = 18px */
+.ft-links a {
+  position: relative; display: inline-flex; align-items: center; min-height: 36px; padding: 0 6px;
+  color: inherit; font-weight: 500; text-decoration: none; transition: color 0.2s;
+}
+/* Hover: renk koyulaşır, altında ince çizgi soldan sağa uzar */
+.ft-links a::after {
+  content: ""; position: absolute; left: 6px; right: 6px; bottom: 9px; height: 1px;
+  background: currentColor; scale: 0 1; transform-origin: left center;
+  transition: scale 0.3s var(--ease-out);
+}
+@media (hover: hover) {
+  .ft-links a:hover { color: var(--ft-hover); }
+  .ft-links a:hover::after { scale: 1 1; }
+}
+.ft-links a:focus-visible { outline: 3px solid var(--blue-strong); outline-offset: 2px; border-radius: 8px; }
+.copyright { margin: -2px 0 0; color: inherit; font-size: inherit; line-height: 1.4; }
+
+/* Kısa ekranlar: önce ikincil metinler gider, böylece menü hep tek ekrana sığar */
+@media (max-height: 720px) { .foot { display: none; } }
+@media (max-height: 640px) {
+  .hero-sub { display: none; }
+  .menu-actions .play-row .btn { min-height: 52px; }
+}
+@media (max-height: 540px) {
+  .hero { --ch: 50px; }
+  .brand-mark { width: 30px; height: 30px; font-size: 1rem; }
+  .copyright { display: none; }
+  .hero-panel { padding-top: 8px; padding-bottom: 8px; }
+}
+
+/* Yatay telefon: iki sütun (sol: oyuna giriş, sağ: iletişim) */
+@media (orientation: landscape) and (max-height: 520px) {
+  body:has(#screen-menu.active) .app { max-width: 880px; }
+  .menu.active { display: grid; grid-template-columns: 1fr 1fr; grid-template-rows: auto minmax(0, 1fr); column-gap: 16px; row-gap: 8px; }
+  .menu-top { grid-column: 1 / -1; }
+  .hero-panel { grid-column: 1; grid-row: 2; }
+  .site-footer { grid-column: 2; grid-row: 2; justify-content: center; align-self: stretch; }
+  .hero-sub, .foot { display: none; }
+  .copyright { display: block; }
+  .hero { --ch: clamp(44px, 14dvh, 70px); }
+  .hero-title { font-size: clamp(1.3rem, 7dvh, 1.9rem); }
+  .hero-zone { gap: calc(var(--gap) * 0.5); }
+}

@@ -16,7 +16,7 @@ import {
 import { askConfirm, initHowto } from './ui/dialogs.js';
 import { initIntro } from './ui/intro.js';
 
-// Seçimden sonra zamanlama (ms): diğer kartları göster, sonra hepsini kapat.
+// Seçimden sonra zamanlama (ms): diğer kartları göster, sonra hepsini seçilen karttan başlayarak kapat.
 // Kart çevirme süresi tek yerden yönetilir: FLIP_MS, base.css'teki --flip'i ezer.
 const FLIP_MS = 380;
 document.documentElement.style.setProperty('--flip', FLIP_MS + 'ms');
@@ -135,7 +135,7 @@ function onCardClick(index) {
   peek(PEEK_AT);
   roundTimer = setTimeout(() => {
     if (gameSeq !== seq || !state) return;
-    closeAllCards();
+    closeAllCards(index);
     roundTimer = setTimeout(() => {
       if (gameSeq !== seq || !state) return;
       state = nextRound(state);
