@@ -4,7 +4,7 @@
    Mantık: game.js · Ses: audio.js · Depolama: storage.js · Arayüz: ui/*
    ========================================================== */
 
-import { $, $$ } from './ui/dom.js';
+import { $, $$, initFirstRound } from './ui/dom.js';
 import { newGame, pickCard, nextRound, totalScore, fmt } from './game.js';
 import { GameAudio } from './audio.js';
 import { loadBest, saveBest, loadSaved, saveState } from './storage.js';
@@ -15,9 +15,8 @@ import {
 } from './ui/screens.js';
 import { askConfirm, initHowto } from './ui/dialogs.js';
 import { initIntro } from './ui/intro.js';
+import { initShare } from './ui/share.js';
 
-// Seçimden sonra zamanlama (ms): diğer kartları göster, sonra hepsini seçilen karttan başlayarak kapat.
-// Kart çevirme süresi tek yerden yönetilir: FLIP_MS, base.css'teki --flip'i ezer.
 const FLIP_MS = 380;
 document.documentElement.style.setProperty('--flip', FLIP_MS + 'ms');
 const PEEK_AT = 520;        // seçilen kart açıldıktan hemen sonra diğer 8 kart açılır
@@ -31,11 +30,14 @@ let gameSeq = 0;            // aktif oyun oturumu sayacı
 let resultTimer = null;
 let roundTimer = null;
 let peekTimer = null;
+let resultSoundTimer = null;
 
 function clearTimers() {
   clearTimeout(resultTimer);
   clearTimeout(roundTimer);
   clearTimeout(peekTimer);
+  clearTimeout(resultSoundTimer);
+  resultSoundTimer = null;
   cancelCount();
 }
 
@@ -111,7 +113,10 @@ function onCardClick(index) {
   const seq = gameSeq;
   const { scoreBefore, score, busted } = state;
   GameAudio.playFlip();
-  setTimeout(() => GameAudio.playResult(scoreBefore, score, busted), 160);
+  resultSoundTimer = setTimeout(() => {
+    resultSoundTimer = null;
+    GameAudio.playResult(scoreBefore, score, busted);
+  }, 160);
 
   const peek = (delay) => {
     peekTimer = setTimeout(() => {
@@ -185,6 +190,8 @@ $('#btn-menu-game').addEventListener('click', goMenu);
 $('#btn-menu-result').addEventListener('click', goMenu);
 $$('.sound-btn').forEach((b) => b.addEventListener('click', toggleSound));
 initHowto();
+initFirstRound();
+initShare(() => state);
 
 syncSoundButtons();
 renderMenuBest();

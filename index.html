@@ -6,11 +6,6 @@
   <meta name="theme-color" content="#f4f6fb">
   <title>Yedi Kart</title>
 
-  <!-- Font dosyası: Inter (ücretsiz). InterVariable.woff2'yi assets/fonts/ içine koy (bkz. css/fonts.css) -->
-  <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
-
-  <link rel="preload" href="assets/fonts/InterVariable.woff2" as="font" type="font/woff2" crossorigin>
-
   <!-- CSS yükleme sırası önemli: yazı tipleri → temel → parçalar → ekranlar → diyalog → giriş → hareket (en son) -->
   <link rel="stylesheet" href="css/fonts.css">
   <link rel="stylesheet" href="css/base.css">
@@ -119,7 +114,6 @@
 
     <!-- Sonuç ekranı (7 turu sıfır görmeden bitirenler) -->
     <section id="screen-result" class="screen" aria-label="Sonuç">
-      <h2 class="title">Oyun Tamamlandı</h2>
       <div class="score-card big">
         <span class="label">FİNAL SKORU</span>
         <span id="final-score" class="score">1</span>
@@ -135,8 +129,13 @@
 
       <div class="row">
         <button type="button" id="btn-again" class="btn primary">Tekrar Oyna</button>
+        <button type="button" id="btn-share" class="btn secondary share-btn">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.8" stroke="currentColor" aria-hidden="true" focusable="false"><path stroke-linecap="round" stroke-linejoin="round" d="M7.217 10.907a2.25 2.25 0 1 0 0 2.186m0-2.186c.18.324.283.696.283 1.093s-.103.77-.283 1.093m0-2.186 9.566-5.314m-9.566 7.5 9.566 5.314m0 0a2.25 2.25 0 1 0 3.935 2.186 2.25 2.25 0 0 0-3.935-2.186Zm0-12.814a2.25 2.25 0 1 0 3.933-2.185 2.25 2.25 0 0 0-3.933 2.185Z"/></svg>
+          <span class="share-label">Paylaş</span>
+        </button>
         <button type="button" id="btn-menu-result" class="btn ghost">Ana Menü</button>
       </div>
+      <p id="share-status" class="share-status" role="status" aria-live="polite"></p>
     </section>
 
     <!-- Game over (0 açıldığında) -->

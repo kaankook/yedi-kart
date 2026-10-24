@@ -57,6 +57,7 @@ export function revealCard(index, value, comboLevel = 0) {
   btn.classList.add('revealed', 'picked');
   btn.classList.toggle('combo', comboLevel >= 2);
   btn.classList.toggle('combo-next', comboLevel >= 3);
+  btn.style.setProperty('--lv', String(Math.min(comboLevel, 5))); // CSS'te efekt şiddeti için
 }
 
 // Seçilmeyen diğer kartları yarı saydam açar (FOMO etkisi).
@@ -66,6 +67,8 @@ export function peekOthers(cards, except) {
     const btn = cardEl(i);
     if (!btn) return;
     setFace(btn, i, card.value);
+    const dist = Math.abs((i % 3) - (except % 3)) + Math.abs(Math.floor(i / 3) - Math.floor(except / 3));
+    btn.style.setProperty('--peek-delay', `${50 + dist * 35}ms`); // seçilenden dışarı doğru dalga
     btn.classList.add('revealed', 'peek');
   });
 }

@@ -40,15 +40,15 @@
 #screen-game > .game-picked { grid-row: 6; margin-top: var(--g2); }
 #screen-game > .row { grid-row: 8; margin-top: var(--g2); }
 #screen-game > .row .btn {
-  transition: translate 0.48s var(--ease-out), box-shadow 0.48s var(--ease-out),
-    background 0.48s var(--ease-out), color 0.48s var(--ease-out),
-    border-color 0.48s var(--ease-out), filter 0.48s var(--ease-out), transform 0.08s;
+  transition: translate 0.24s var(--ease-out), box-shadow 0.24s var(--ease-out),
+    background 0.24s var(--ease-out), color 0.24s var(--ease-out),
+    border-color 0.24s var(--ease-out), filter 0.24s var(--ease-out), transform 0.08s;
 }
 @media (hover: hover) and (pointer: fine) {
   #screen-game > .row .btn:hover {
     translate: 0 -3px;
-    filter: brightness(0.97);
-    box-shadow: 0 10px 20px rgba(35, 52, 99, 0.15);
+    filter: brightness(0.92);
+    box-shadow: 0 10px 20px rgba(35, 52, 99, 0.22);
   }
 }
 
@@ -56,17 +56,16 @@
   position: relative; aspect-ratio: 1 / 1; padding: 0; border: 0;
   background: none; -webkit-perspective: 700px; perspective: 700px; cursor: pointer; font: inherit;
   -webkit-appearance: none; appearance: none;
-  transition: opacity 0.28s ease, transform 0.28s ease, translate 0.48s var(--ease-out);
+  transition: opacity 0.28s ease, transform 0.28s ease, translate 0.22s var(--ease-out), scale 0.22s var(--ease-out);
 }
 .card-inner {
   position: absolute; inset: 0;
   -webkit-transform-style: preserve-3d; transform-style: preserve-3d;
-  transition: transform var(--flip) cubic-bezier(0.25, 0.8, 0.25, 1);
+  transition: transform var(--flip) cubic-bezier(0.3, 1.15, 0.4, 1); /* hafif aşım: kart yerine oturur */
   will-change: transform;
 }
 .card.revealed .card-inner,
 .card.peek .card-inner { -webkit-transform: rotateY(180deg); transform: rotateY(180deg); }
-.card:not(.revealed):not(.peek):not(.closing):active .card-inner { transform: scale(0.95); }
 
 /* Yeni tura geçerken: kapanış seçilen karttan dışarı doğru yayılır ve kartlar hafifçe yerinde karışır */
 .card.closing {
@@ -78,15 +77,15 @@
   transition-delay: var(--wave, 0ms);
 }
 @keyframes redeal {
-  0%, 100% { translate: 0 0; }
-  45% { translate: 0 -5px; }
+  0%, 100% { translate: 0 0; scale: 1; }
+  45% { translate: 0 -5px; scale: 0.96; }
 }
 
 .face {
   position: absolute; inset: 0; display: grid; place-items: center;
   border-radius: var(--radius); backface-visibility: hidden; -webkit-backface-visibility: hidden;
   box-shadow: var(--shadow);
-  transition: box-shadow 0.48s var(--ease-out), filter 0.48s var(--ease-out);
+  transition: box-shadow 0.25s var(--ease-out), filter 0.25s var(--ease-out);
 }
 .face.back {
   background: linear-gradient(135deg, var(--blue), var(--lilac));
@@ -99,81 +98,88 @@
 }
 .card.revealed, .card.peek { cursor: default; }
 
+/* ---- Hover ----
+   Kart yamulmaz: yalnızca hafifçe yükselir, çok az büyür ve gölgesi belirginleşir.
+   Basılınca hafifçe küçülür; tıklayınca açılış (çevirme) normal şekilde başlar. */
+.card:not(.revealed):not(.peek):not(.closing) .card-inner {
+  transition: transform 0.2s var(--ease-out);   /* hover/basma geçişi seri; açılış ve kapanış --flip süresiyle */
+}
+.card:not(.revealed):not(.peek):not(.closing):active .card-inner {
+  -webkit-transform: scale(0.96); transform: scale(0.96);
+}
 @media (hover: hover) and (pointer: fine) {
   .card:not(.revealed):not(.peek):not(.closing):not(.picked):hover {
-    translate: 0 -3px;
+    translate: 0 -4px;
+    scale: 1.03;
   }
   .card:not(.revealed):not(.peek):not(.closing):not(.picked):hover .face {
-    box-shadow: 0 10px 20px rgba(35, 52, 99, 0.15);
-  }
-  .card:not(.revealed):not(.peek):not(.closing):not(.picked):hover .face.back {
-    filter: brightness(0.97);
+    box-shadow: 0 12px 22px rgba(35, 52, 99, 0.2);
   }
 }
 
-/* Renk sınıfları (.picked, .neg, .zero) kapanış dönüşü bitene kadar korunduğu için renk sıçraması olmaz */
-.card.picked .face.front { border-color: var(--line); background: var(--surface); }
+/* ---- Seçilen kart ----
+   Tüm efektler transform/opacity/translate/scale ile çalışır (box-shadow animasyonu yok): iOS'ta akıcı.
+   Efektler çevirmenin yarısında (var(--flip) * 0.5) başlar, yani yüz görününce. */
+.card.picked { z-index: 2; }
+.card.picked .face.front { border-color: var(--line); background: var(--surface); overflow: hidden; }
+
+/* Kombo kartı animasyon bittikten sonra da ayırt edilir */
+.card.picked.combo:not(.neg):not(.zero) .face.front {
+  border-color: rgba(123, 95, 208, 0.7);
+  background: linear-gradient(160deg, var(--surface) 35%, rgba(123, 95, 208, 0.14));
+  color: var(--lilac-strong);
+}
+.card.picked.combo-next:not(.neg):not(.zero) .face.front {
+  border-color: #e4b341;
+  background: linear-gradient(160deg, var(--surface) 30%, rgba(252, 232, 178, 0.6));
+}
 .card.neg .face.front,
 .card.zero .face.front { border-color: var(--neg); background: var(--tint-neg); color: var(--neg); }
-.card.picked .face.front {
-  overflow: hidden;
-  animation: picked-reveal 0.72s var(--ease-out) both;
+
+/* Kart havalanıp yerine oturur; kombo seviyesi (--lv, 0-5) arttıkça daha belirgin */
+.card.picked .card-inner { animation: card-lift var(--flip) var(--ease-out) both; }
+.card.picked.combo .card-inner { animation: card-lift-combo calc(var(--flip) * 1.25) var(--ease-out) both; }
+@keyframes card-lift { 0% { scale: 1; } 45% { scale: 1.08; } 100% { scale: 1; } }
+@keyframes card-lift-combo {
+  0% { scale: 1; }
+  40% { scale: calc(1.1 + var(--lv, 2) * 0.012); }
+  62% { scale: 1.03; }
+  100% { scale: 1; }
 }
+
+/* Işık süpürmesi */
 .card.picked .face.front::after {
-  content: "";
-  position: absolute;
-  inset: 0;
-  pointer-events: none;
-  border-radius: inherit;
+  content: ""; position: absolute; inset: 0; pointer-events: none; border-radius: inherit;
   background: linear-gradient(115deg, transparent 22%, rgba(252, 232, 178, 0.52) 50%, transparent 78%);
-  translate: -120% 0;
-  animation: picked-shine 0.72s var(--ease-out) both;
-}
-@keyframes picked-reveal {
-  0% { box-shadow: var(--shadow); filter: brightness(1); translate: 0 0; }
-  42% { box-shadow: 0 14px 28px rgba(35, 52, 99, 0.16); filter: brightness(1.025); translate: 0 -2px; }
-  100% { box-shadow: var(--shadow); filter: brightness(1); translate: 0 0; }
-}
-@keyframes picked-shine {
-  0% { opacity: 0; translate: -120% 0; }
-  24% { opacity: 0.7; }
-  70%, 100% { opacity: 0; translate: 120% 0; }
-}
-.card.picked.combo .face.front {
-  animation: combo-reveal 1.02s var(--ease-out) both;
+  opacity: 0; translate: -120% 0;
+  animation: picked-shine 0.7s var(--ease-out) calc(var(--flip, 0.5s) * 0.55) both;
 }
 .card.picked.combo .face.front::after {
-  background: linear-gradient(115deg, transparent 18%, rgba(252, 232, 178, 0.82) 50%, transparent 82%);
-  animation: combo-shine 1.02s var(--ease-out) both;
+  background: linear-gradient(115deg, transparent 18%, rgba(252, 232, 178, 0.85) 50%, transparent 82%);
+  animation-duration: 0.85s;
 }
-.card.picked.combo-next .face.front {
-  animation: combo-next-reveal 1.1s var(--ease-out) both;
-}
-.card.picked.combo-next .face.front::after {
-  background: linear-gradient(115deg, transparent 14%, rgba(252, 232, 178, 0.92) 50%, transparent 86%);
-  animation: combo-next-shine 1.1s var(--ease-out) both;
-}
-@keyframes combo-reveal {
-  0% { box-shadow: var(--shadow); filter: brightness(1); translate: 0 0; }
-  38% { box-shadow: 0 0 0 5px rgba(123, 95, 208, 0.14), 0 0 18px 3px rgba(252, 232, 178, 0.24), 0 14px 28px rgba(123, 95, 208, 0.2); filter: brightness(1.035); translate: 0 -2px; }
-  64% { box-shadow: 0 0 0 3px rgba(252, 232, 178, 0.34), 0 0 14px 2px rgba(123, 95, 208, 0.14), 0 12px 24px rgba(123, 95, 208, 0.15); filter: brightness(1.02); translate: 0 -1px; }
-  100% { box-shadow: var(--shadow); filter: brightness(1); translate: 0 0; }
-}
-@keyframes combo-shine {
+.card.picked.combo-next .face.front::after { animation-iteration-count: 2; }
+@keyframes picked-shine {
   0% { opacity: 0; translate: -120% 0; }
-  22% { opacity: 0.85; }
-  72%, 100% { opacity: 0; translate: 120% 0; }
+  24% { opacity: 0.8; }
+  70%, 100% { opacity: 0; translate: 120% 0; }
 }
-@keyframes combo-next-reveal {
-  0% { box-shadow: var(--shadow); filter: brightness(1); translate: 0 0; }
-  38% { box-shadow: 0 0 0 7px rgba(123, 95, 208, 0.2), 0 0 20px 4px rgba(252, 232, 178, 0.3), 0 16px 30px rgba(123, 95, 208, 0.24); filter: brightness(1.05); translate: 0 -3px; }
-  64% { box-shadow: 0 0 0 4px rgba(252, 232, 178, 0.44), 0 0 16px 3px rgba(123, 95, 208, 0.18), 0 14px 26px rgba(123, 95, 208, 0.18); filter: brightness(1.03); translate: 0 -1px; }
-  100% { box-shadow: var(--shadow); filter: brightness(1); translate: 0 0; }
+
+/* Kombo halkaları: karttan dışarı yayılan ince çerçeve (yalnızca transform + opacity) */
+.card.picked.combo::before,
+.card.picked.combo-next::after {
+  content: ""; position: absolute; inset: 0; border-radius: var(--radius);
+  border: 3px solid rgba(123, 95, 208, 0.65);
+  opacity: 0; pointer-events: none;
+  animation: ring-out 0.7s var(--ease-out) calc(var(--flip, 0.5s) * 0.5) forwards;
 }
-@keyframes combo-next-shine {
-  0% { opacity: 0; translate: -120% 0; }
-  20% { opacity: 0.95; }
-  72%, 100% { opacity: 0; translate: 120% 0; }
+.card.picked.combo-next::after {
+  border-color: rgba(228, 179, 65, 0.85);
+  animation-delay: calc(var(--flip, 0.5s) * 0.5 + 110ms);
+}
+@keyframes ring-out {
+  0% { opacity: 0.9; transform: scale(1); }
+  100% { opacity: 0; transform: scale(calc(1.28 + var(--lv, 2) * 0.05)); }
 }
 
 /* FOMO Etkisi: seçilmeyen diğer 8 kartın yarı saydam açılışı */
@@ -181,18 +187,29 @@
   opacity: 0.42;
   transform: scale(0.94);
   pointer-events: none;
+  transition-delay: var(--peek-delay, 0ms);          /* seçilen karttan uzaklaştıkça sırayla açılır */
 }
+.card.peek .card-inner { transition-delay: var(--peek-delay, 0ms); }
 
-/* Sıfır açıldı */
+/* Sıfır açıldı: kart çarpar, kırmızı halka iki kez yayılır, kart kalıcı kırmızı parıltı taşır */
 .card.doom .face.front {
   border-color: var(--neg); background: #fdecea; color: var(--neg);
+  box-shadow: 0 0 0 4px rgba(217, 83, 79, 0.25), 0 0 24px rgba(217, 83, 79, 0.45);
 }
-.card.doom .face.front::after {
-  content: ""; position: absolute; inset: 0; border-radius: inherit; pointer-events: none;
-  box-shadow: 0 0 0 8px rgba(217, 83, 79, 0.35), 0 0 30px 10px rgba(217, 83, 79, 0.6);
-  opacity: 0; animation: doom-glow 0.55s ease 2;
+.card.doom .face.front::after { animation: none; opacity: 0; }
+.card.doom .card-inner { animation: doom-thud calc(var(--flip) * 1.2) var(--ease-out) both; }
+@keyframes doom-thud {
+  0% { scale: 1; }
+  35% { scale: 1.14; }
+  55% { scale: 0.97; }
+  100% { scale: 1; }
 }
-@keyframes doom-glow { 50% { opacity: 1; } }
+.card.doom::before {
+  content: ""; position: absolute; inset: 0; border-radius: var(--radius);
+  border: 3px solid rgba(217, 83, 79, 0.85);
+  opacity: 0; pointer-events: none;
+  animation: ring-out 0.6s ease-out calc(var(--flip, 0.5s) * 0.5) 2 forwards;
+}
 .grid.dead .card:not(.revealed) { opacity: 0.32; transform: scale(0.93); filter: grayscale(0.45); pointer-events: none; }
 .screen.shake { animation: shake 0.5s ease; }
 @keyframes shake {
@@ -214,16 +231,20 @@
   color: var(--lilac-strong);
   font-size: 1.7rem;
   font-weight: 900;
+  letter-spacing: 0.04em;
   line-height: 1;
   text-align: center;
+  text-shadow: 0 2px 14px rgba(123, 95, 208, 0.35);
   opacity: 0;
   transform: scale(0.65) translateY(8px);
   pointer-events: none;
 }
-.combo-banner.show { animation: combo-pop 1.35s ease-out both; }
+.combo-banner.show { animation: combo-pop 1.2s var(--ease-out) both; }
 @keyframes combo-pop {
-  0% { opacity: 0; transform: scale(0.65) translateY(8px); }
-  22% { opacity: 1; transform: scale(1.18) translateY(0); }
-  45% { transform: scale(0.98) translateY(0); }
-  100% { opacity: 0; transform: scale(1) translateY(-10px); }
+  0% { opacity: 0; transform: scale(0.5) translateY(14px); rotate: -3deg; }
+  18% { opacity: 1; transform: scale(1.25) translateY(0); rotate: 1.5deg; }
+  32% { transform: scale(0.96) translateY(0); rotate: 0deg; }
+  46% { transform: scale(1.04) translateY(0); }
+  60% { opacity: 1; transform: scale(1) translateY(0); }
+  100% { opacity: 0; transform: scale(1) translateY(-14px); }
 }

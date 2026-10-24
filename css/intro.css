@@ -11,7 +11,7 @@
   .site-footer,
   .game-head, .game-picked, .score-card, .grid .card,
   .screen:not(.gameover) > .row,
-  .screen > .title, .screen > .muted, .screen > .best, .screen > .picked
+  .screen > .best, .screen > .picked
 ) {
   animation: enter var(--enter-dur) var(--enter-ease) backwards;   /* backwards: bitince öğenin kendi stiline döner */
   animation-delay: var(--d, calc(var(--enter-base) + var(--i, 0) * var(--enter-step)));
@@ -25,7 +25,7 @@
 .hero-sub { --i: 5; }
 .menu-actions .btn { --i: 6; }
 .menu-actions .best, .menu-actions .foot { --i: 7; }
-.site-footer { --d: 640ms; }   /* dialed.gg: gecikme .64s */
+.site-footer { --d: 640ms; }
 .intro .site-footer { animation-duration: var(--enter-dur-slow); }   /* 820ms = .82s */
 
 /* Oyun (sayfa yenilendiğinde oyun sürüyorsa) */
@@ -36,8 +36,40 @@
 #screen-game > .row { --i: 5; }
 
 /* Sonuç */
-#screen-result > .title { --i: 0; }
-#screen-result > .muted { --i: 2; }
 #screen-result > .best { --i: 3; }
 #screen-result > .picked { --i: 4; }
 #screen-result > .row { --i: 5; }
+
+/* İlk turda oyun ekranını kısa bir dalgayla göster; sonraki turlarda tekrarlanmaz. */
+#screen-game.first-round {
+  --enter-y: 8px;
+  --enter-dur: 640ms;
+  --enter-ease: var(--ease-out);
+  --enter-base: 40ms;
+  --enter-step: 70ms;
+  --enter-wave: 1;
+}
+
+#screen-game.first-round :is(.game-head, .score-card, .grid .card, .game-picked),
+#screen-game.first-round > .row {
+  animation: enter var(--enter-dur) var(--enter-ease) backwards;
+  animation-delay: var(--d, calc(var(--enter-base) + var(--i, 0) * var(--enter-step)));
+}
+
+#screen-game.first-round .game-head { --i: 0; }
+#screen-game.first-round .score-card { --i: 1; }
+#screen-game.first-round .grid .card {
+  --d: calc(var(--enter-base) + 2 * var(--enter-step) + var(--wave, 0ms) * var(--enter-wave));
+}
+#screen-game.first-round .game-picked { --i: 5; }
+#screen-game.first-round > .row { --i: 6; }
+
+@media (prefers-reduced-motion: reduce) {
+  #screen-game.first-round {
+    --enter-y: 0px;
+    --enter-dur: 300ms;
+    --enter-base: 0ms;
+    --enter-step: 0ms;
+    --enter-wave: 0;
+  }
+}

@@ -22,7 +22,12 @@
   .card-inner { transition: none; }
   .card.closing { animation: none; transition-delay: 0s; }
   .card.closing .card-inner { transition-delay: 0s; }
-  .card:not(.revealed):not(.peek):not(.closing):active .card-inner { transform: none; }
+  .card:not(.revealed):not(.peek):not(.closing):active .card-inner,
+  .card:not(.revealed):not(.peek):not(.closing):not(.picked):hover .card-inner,
+  .card:not(.revealed):not(.peek):not(.closing):not(.picked):hover:active .card-inner {
+    transform: none;
+  }
+  .card:not(.revealed):not(.peek):not(.closing) .card-inner { transition: none; }
 
   /* Skor, tur ve düğme vurguları */
   .pill.bump, .score.bump { animation: none; }
@@ -78,7 +83,11 @@
   /* Game over: büyüme/kayma yok, öğeler yumuşakça belirir; yanıp sönen parıltılar sabit */
   .gameover > *, .go-zero { animation: fade-in 0.3s ease both; }
   .go-zero::after { animation: none; }
-  .card.doom .face.front::after { animation: none; opacity: 1; }
+  /* Kombo/sıfır halkaları ve kart havalanması kapanır; kalıcı renk vurgusu (kenarlık, parıltı) kalır */
+  .card::before, .card::after { display: none; }
+  .card.picked .card-inner, .card.doom .card-inner { animation: none; }
+  .card.peek, .card.peek .card-inner { transition-delay: 0s; }
+  .combo-banner { rotate: none; }
   #screen-result > *, #screen-result > .score-card, #screen-result > .row .btn,
   .gameover .go-lost, .gameover .go-actions .btn, .picked-item:not(.ghost) {
     transition: none;

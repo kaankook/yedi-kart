@@ -2,11 +2,7 @@
    Renk ve font kararları yalnızca burada verilir; diğer dosyalar bu değişkenleri kullanır. */
 
 :root {
-  /* ---------- Yazı tipi ----------
-     Tek kaynak: burası. Dosyalar css/fonts.css'te tanımlı.
-     Inter, Suisse Int'l ile aynı ailedendir (nötr grotesk); Türkçe karakterleri (ğ ş İ ı) tam destekler.
-     "Inter Fallback": Inter yüklenene kadar Arial'i Inter ölçülerine uydurur, sayfa kaymaz.
-     Sıradaki fontlar da grotesk: Helvetica Neue / Helvetica / Arial. */
+  /* ---------- Yazı tipi ---------- */
   --font-sans: "Inter", "Inter Fallback", "Helvetica Neue", Helvetica, Arial, system-ui, sans-serif;
 
   /* ---------- Zemin ve metin ---------- */
@@ -19,7 +15,7 @@
 
   /* ---------- Vurgu renkleri: ana / açık uç (gradyan sonu) ---------- */
   --blue: #b2d1f7;
-  --blue-strong: #3b73d6;   /* beyaz yazıyla ~4,6:1 */
+  --blue-strong: #3b73d6;
   --blue-lite: #86b0ef;
   --mint: #c2ead9;
   --mint-strong: #258f69;
@@ -44,8 +40,8 @@
 
   --shadow: 0 6px 16px rgba(35, 52, 99, 0.09);
   --radius: 18px;
-  --flip: 380ms;            /* kart çevirme süresi (FLIP_MS bunu ezer) */
-  --phi: 1.618;             /* altın oran: hero panel aralıkları bununla ölçeklenir */
+  --flip: 380ms;            /* kart çevirme süresi */
+  --phi: 1.618;
 
   /* ---------- Hareket ölçüleri (intro.css, howto.css ve hover efektleri birlikte kullanır) ---------- */
   --ease-out: cubic-bezier(0.22, 1, 0.36, 1);     /* easeOutQuint: hızlı başlar, yumuşak oturur */
@@ -101,7 +97,6 @@ body.dark {
 /* Tipografi */
 .title { margin: 0; font-size: 2rem; text-align: center; letter-spacing: -0.5px; }
 .title.small { font-size: 1.3rem; text-align: left; }
-.title.big { font-size: 2.8rem; line-height: 1.05; letter-spacing: -1px; }
 .muted { margin: 0; text-align: center; color: var(--muted); }
 .label { font-size: 0.75rem; font-weight: 700; letter-spacing: 1px; color: var(--muted); text-transform: uppercase; }
 

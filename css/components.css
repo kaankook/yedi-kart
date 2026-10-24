@@ -40,7 +40,7 @@
 .brand-name { font-size: 1.1rem; font-weight: 800; letter-spacing: -0.2px; }
 
 /* ---------- İkon düğmesi ----------
-   Ses düğmesi: çerçevesiz, arka plansız; yalnızca ikon (dialed.gg ölçüleri) */
+   Menü, paylaşım, ayarlar gibi küçük düğmeler için. */
 .icon-btn {
   --dim: rgb(31 42 68 / 0.55);
   position: relative; z-index: 1;

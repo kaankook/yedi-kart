@@ -1,131 +1,176 @@
-/* result.css — seçilen kartlar ve sonuç görünümü */
-/* ======================================================================
-   SONUÇ EKRANI
-   ====================================================================== */
+/* result.css — sonuç ekranı (Apple tarzı) ve seçilen kartlar
+   Dil: açık gri zemin, beyaz kartlar, tek vurgu rengi (mavi), geniş boşluk,
+   yuvarlak hap düğmeler, çok hafif gölgeler. */
 
 #screen-result {
-  --result-gap: clamp(10px, 2.2dvh, 18px);
+  --r-bg: #f5f5f7;
+  --r-card: #ffffff;
+  --r-ink: #1d1d1f;
+  --r-muted: #86868b;
+  --r-line: rgba(0, 0, 0, 0.06);
+  --r-accent: #0071e3;
+  --r-accent-hover: #0077ed;
+  --r-fill: #e8e8ed;
+  --card-w: min(100%, 340px);
   align-items: center;
+  justify-content: center;
   min-height: calc(100dvh - 40px);
-  padding: clamp(18px, 4dvh, 36px) 0;
-  gap: var(--result-gap);
+  min-height: calc(100dvh - max(16px, env(safe-area-inset-top)) - max(20px, env(safe-area-inset-bottom)));
+  padding: clamp(24px, 5dvh, 44px) 0;
+  gap: clamp(14px, 2.4dvh, 22px);
   isolation: isolate;
+  text-align: center;
 }
-body:has(#screen-result.active) {
-  background:
-    radial-gradient(ellipse at 50% 0%, #ffffff 0%, #f8f9fd 42%, var(--bg) 100%);
-}
+body:has(#screen-result.active) { background: #f5f5f7; }
 #screen-result::before,
 #screen-result::after { display: none; }
-#screen-result > .title {
-  position: relative;
-  margin: 0;
-  color: var(--ink);
-  font-size: clamp(1.8rem, 6vw, 2.35rem);
-  letter-spacing: -0.045em;
-  animation: result-rise 0.6s var(--ease-out) both;
-}
-#screen-result > .title::after {
-  content: "";
-  display: block;
-  width: 42px;
-  height: 4px;
-  margin: 12px auto 0;
-  border-radius: 999px;
-  background: linear-gradient(90deg, var(--blue-strong), var(--lilac-strong));
-}
+
+/* "7 / 7 tur oynandı" satırı gizli */
+#result-rounds { display: none !important; }
+
+/* Skor kartı: beyaz, sade */
 #screen-result > .score-card {
-  width: min(100%, 360px);
-  padding: clamp(24px, 4dvh, 34px) 18px;
-  border: 1px solid rgb(255 255 255 / 0.8);
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  width: var(--card-w);
+  box-sizing: border-box;
+  padding: clamp(28px, 5dvh, 40px) 20px clamp(26px, 4.4dvh, 36px);
+  border: 0;
   border-radius: 28px;
-  background: rgb(255 255 255 / 0.84);
-  box-shadow: 0 18px 40px rgba(35, 52, 99, 0.12);
-  animation: result-rise 0.65s var(--ease-out) 80ms both;
-  transition: translate 0.35s var(--ease-out), box-shadow 0.35s var(--ease-out);
+  background: var(--r-card);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04), 0 12px 32px -12px rgba(0, 0, 0, 0.1);
+  animation: result-fade 0.7s var(--ease-out) both;
 }
-#screen-result > .score-card:hover {
-  translate: 0 -5px;
-  box-shadow: 0 24px 48px rgba(35, 52, 99, 0.18);
-}
+#screen-result > .score-card::before,
+#screen-result > .score-card::after { display: none; }
 #screen-result > .score-card .label {
-  color: var(--blue-ink);
-  letter-spacing: 0.14em;
+  color: var(--r-muted);
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.12em;
 }
 #screen-result > .score-card .score {
-  margin-top: 8px;
-  color: var(--ink);
-  font-size: clamp(3.4rem, 15vw, 5.1rem);
-  letter-spacing: -0.07em;
-  line-height: 0.95;
+  white-space: nowrap;
+  max-width: 100%;
+  margin-top: 6px;
+  color: var(--r-ink);
+  -webkit-text-fill-color: currentColor;
+  background: none;
+  font-size: clamp(3.8rem, 18vw, 5.2rem);
+  font-weight: 700;
+  letter-spacing: -0.06em;
+  line-height: 1.05;
+  font-variant-numeric: tabular-nums;
 }
 #screen-result > .score-card .score-breakdown {
-  margin-top: 12px;
+  max-width: 100%;
+  overflow-wrap: anywhere;
+  text-align: center;
+  text-wrap: balance;
+  margin-top: 10px;
   min-height: 1.15em;
-  color: var(--lilac-strong);
+  padding: 0;
+  background: none;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--r-muted);
 }
-#screen-result > .muted {
-  margin: -2px 0 0;
-  font-size: 0.95rem;
-  animation: result-rise 0.6s var(--ease-out) 160ms both;
-}
+#screen-result > .score-card .score-breakdown:empty { display: none; }
+
+/* Rekor etiketi: sade, hafif yeşil */
 #screen-result > .best {
-  margin: -2px 0 0;
-  padding: 9px 18px;
-  background: var(--mint);
-  box-shadow: 0 7px 16px rgba(37, 143, 105, 0.14);
-  animation: result-rise 0.6s var(--ease-out) 220ms both;
-  transition: translate 0.3s var(--ease-out), box-shadow 0.3s ease;
+  margin: 0;
+  padding: 7px 14px;
+  border-radius: 999px;
+  background: #e9f6ee;
+  box-shadow: none;
+  color: #1f7a3d;
+  font-size: 0.85rem;
+  font-weight: 600;
+  animation: result-fade 0.6s var(--ease-out) 120ms both;
 }
-#screen-result > .best:hover {
-  translate: 0 -2px;
-  box-shadow: 0 10px 22px rgba(37, 143, 105, 0.2);
-}
+#screen-result > .best:empty { display: none; }
+
+/* Seçilen kartlar: beyaz karo, ince çizgi */
 #screen-result > .picked {
-  width: min(100%, 360px);
-  gap: 8px;
+  width: var(--card-w);
+  gap: 10px;
   margin-top: 2px;
-  animation: result-rise 0.6s var(--ease-out) 280ms both;
+  animation: result-fade 0.6s var(--ease-out) 200ms both;
 }
 #screen-result > .picked > .label {
-  padding-left: 2px;
-  color: var(--blue-ink);
+  padding: 0;
+  text-align: center;
+  color: var(--r-muted);
+  font-weight: 600;
 }
-#screen-result > .row {
-  width: min(100%, 360px);
-  margin-top: 2px;
-  animation: result-rise 0.6s var(--ease-out) 360ms both;
+#screen-result .picked-item {
+  background: var(--r-card);
+  border: 1px solid var(--r-line);
+  color: var(--r-ink);
+  border-radius: 10px;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
 }
-#screen-result > .row .btn {
-  min-height: 56px;
-  border-radius: 18px;
-  transition: translate 0.28s var(--ease-out), box-shadow 0.28s var(--ease-out),
-    background 0.48s var(--ease-out), color 0.48s var(--ease-out),
-    border-color 0.48s var(--ease-out), filter 0.48s var(--ease-out), transform 0.08s;
+#screen-result .picked-item.neg {
+  background: var(--r-card);
+  border-color: rgba(255, 59, 48, 0.2);
+  color: #ff3b30;
 }
-#screen-result > .row .btn:hover {
-  translate: 0 -3px;
-  filter: brightness(0.97);
-  box-shadow: 0 10px 20px rgba(35, 52, 99, 0.15);
-}
-#screen-result > .row .btn.primary:hover {
-  box-shadow: 0 10px 20px rgba(35, 52, 99, 0.15);
-}
-#screen-result > .row .btn.ghost:hover {
-  color: var(--ink);
-  border-color: var(--line);
-  background: var(--surface);
-}
+#screen-result .picked-arrow { color: var(--r-muted); opacity: 0.6; }
 
-@keyframes result-rise {
-  from { opacity: 0; translate: 0 14px; }
+/* Düğmeler: Tekrar Oyna (mavi, tam genişlik) · Paylaş + Ana Menü (gri, eşit) */
+#screen-result > .row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  width: var(--card-w);
+  margin-top: 6px;
+  animation: result-fade 0.6s var(--ease-out) 280ms both;
+}
+#screen-result > .row #btn-again { grid-column: 1 / -1; }
+#screen-result > .row .btn {
+  display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+  min-height: 50px;
+  padding: 0 18px;
+  border: 0;
+  border-radius: 999px;
+  box-shadow: none;
+  filter: none;
+  font-size: 0.95rem;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  transition: background 0.2s ease, color 0.2s ease, transform 0.12s ease;
+}
+#screen-result > .row .btn:active { transform: scale(0.97); }
+#screen-result > .row .btn:hover { translate: 0 0; filter: none; box-shadow: none; }
+
+#screen-result > .row #btn-again {
+  background: var(--r-accent); color: #fff;
+}
+#screen-result > .row #btn-again:hover { background: var(--r-accent-hover); }
+
+#screen-result > .row #btn-share,
+#screen-result > .row #btn-menu-result {
+  background: var(--r-fill); color: var(--r-ink); border: 0;
+}
+#screen-result > .row #btn-share:hover,
+#screen-result > .row #btn-menu-result:hover { background: #dcdce1; color: var(--r-ink); }
+
+.share-btn svg { width: 17px; height: 17px; flex: none; }
+#screen-result > .row #btn-share.is-done,
+.share-btn.is-done { background: #e9f6ee; color: #1f7a3d; }
+.share-status { margin: -4px 0 0; min-height: 1em; font-size: 0.78rem; color: #86868b; }
+.share-status:empty { display: none; }
+
+@keyframes result-fade {
+  from { opacity: 0; translate: 0 10px; }
   to { opacity: 1; translate: 0 0; }
 }
 
-/* Seçilen kartlar: kutusuz, ince çizgili küçük hücreler. Her tur için bir yuva ayrılır;
-   boş yuvalar silik kesikli çizgidir. Izgara olduğu için 7 hücre hep tek satırda kalır, yer değiştirmez. */
+/* ==========================================================
+   Seçilen kartlar (oyun ekranı ve sonuç ekranı ortak)
+   ========================================================== */
 .picked {
-  --pick-bg: #f9fafd; --pick-line: #e4e8f3;            /* #F4F6FB'den hafif açık */
+  --pick-bg: #f9fafd; --pick-line: #e4e8f3;
   --pick-neg-bg: #fbf7f9; --pick-neg-line: #f1e0e4;
   display: flex; flex-direction: column; gap: 6px;
   width: var(--board-w, min(100%, 380px)); max-width: 100%; margin-inline: auto;
@@ -140,11 +185,10 @@ body:has(#screen-result.active) {
 }
 .picked-item {
   --ring: var(--blue-strong);
-  flex: 1 1 0; min-width: 0; aspect-ratio: 1 / 1; position: relative;   /* kare hücre */
+  flex: 1 1 0; min-width: 0; aspect-ratio: 1 / 1; position: relative;
   display: grid; place-items: center; padding: 0;
   font-size: 0.88rem; font-weight: 600; line-height: 1; white-space: nowrap; font-variant-numeric: tabular-nums;
   border-radius: 9px;
-  /* soft palet: zemin #F4F6FB; yazı mürekkebin ~%68'i (color-mix yoksa düz renk) */
   color: var(--muted);
   color: color-mix(in srgb, var(--ink) 68%, transparent);
   background: var(--pick-bg); border: 1px solid var(--pick-line);
@@ -156,7 +200,6 @@ body:has(#screen-result.active) {
   color: color-mix(in srgb, var(--neg) 78%, transparent);
   background: var(--pick-neg-bg); border-color: var(--pick-neg-line);
 }
-/* Açılmamış yuvalar görünmez: yer tutarlar (hücre boyutu ve yerleşim sabit kalır) ama ekranda yoktur. */
 .picked-item.ghost, .picked-arrow.ghost { visibility: hidden; }
 
 .picked-arrow {
@@ -164,9 +207,6 @@ body:has(#screen-result.active) {
   transform-origin: left center;
 }
 
-/* Yeni seçim, sırayla üç adımda belirir:
-   1) ok soldan çizilir  2) hücre kendi rengiyle yaylanarak (hafif taşarak) yerine oturur
-   3) hücrenin etrafında tek bir halka yayılıp söner. */
 .picked-arrow.is-new { animation: pick-arrow 0.26s var(--ease-out) both; }
 .picked-item.is-new {
   animation: pick-chip 0.38s cubic-bezier(0.34, 1.56, 0.64, 1) 0.1s both;
@@ -187,42 +227,19 @@ body:has(#screen-result.active) {
   from { opacity: 1; box-shadow: 0 0 0 0 color-mix(in srgb, var(--ring) 45%, transparent); }
   to   { opacity: 0; box-shadow: 0 0 0 9px transparent; }
 }
-@media (prefers-reduced-motion: reduce) { .is-new, .is-new::after { animation: none; } }
+@media (prefers-reduced-motion: reduce) {
+  .is-new, .is-new::after { animation: none; }
+  #screen-result > * { animation: none; }
+}
 
+/* Geniş ekran */
 @media (min-width: 700px) {
-  body:has(#screen-result.active) .app {
-    max-width: 760px;
-  }
+  body:has(#screen-result.active) .app { max-width: 760px; }
 
   #screen-result {
-    min-height: calc(100dvh - 40px);
-    padding: clamp(28px, 6dvh, 64px) 40px;
-    gap: clamp(14px, 2.4dvh, 22px);
+    --card-w: min(100%, 400px);
+    padding: clamp(32px, 6dvh, 64px) 40px;
+    gap: clamp(16px, 2.6dvh, 24px);
   }
-
-  #screen-result > .title {
-    font-size: 2.7rem;
-  }
-
-  #screen-result > .score-card {
-    width: min(100%, 430px);
-    padding: 34px 24px;
-  }
-
-  #screen-result > .score-card .score {
-    font-size: 5.8rem;
-  }
-
-  #screen-result > .picked,
-  #screen-result > .row {
-    width: min(100%, 430px);
-  }
-
-  #screen-result > .picked {
-    margin-top: 8px;
-  }
-
-  #screen-result > .row {
-    margin-top: 8px;
-  }
+  #screen-result > .score-card .score { font-size: 6rem; }
 }
