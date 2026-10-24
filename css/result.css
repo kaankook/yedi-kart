@@ -1,13 +1,12 @@
-/* result.css — sonuç ekranı (Apple tarzı) ve seçilen kartlar
-   Dil: açık gri zemin, beyaz kartlar, tek vurgu rengi (mavi), geniş boşluk,
-   yuvarlak hap düğmeler, çok hafif gölgeler. */
+/* result.css — sonuç ekranı ve seçilen kartlar
+   Dil: Apple tarzı. Açık gri zemin, tek beyaz kart, tek vurgu rengi (mavi),
+   bol boşluk, ince tipografi, yuvarlak hap düğmeler. Süs yok. */
 
 #screen-result {
-  --r-bg: #f5f5f7;
   --r-card: #ffffff;
   --r-ink: #1d1d1f;
   --r-muted: #86868b;
-  --r-line: rgba(0, 0, 0, 0.06);
+  --r-line: rgba(0, 0, 0, 0.08);
   --r-accent: #0071e3;
   --r-accent-hover: #0077ed;
   --r-fill: #e8e8ed;
@@ -17,7 +16,7 @@
   min-height: calc(100dvh - 40px);
   min-height: calc(100dvh - max(16px, env(safe-area-inset-top)) - max(20px, env(safe-area-inset-bottom)));
   padding: clamp(24px, 5dvh, 44px) 0;
-  gap: clamp(14px, 2.4dvh, 22px);
+  gap: clamp(16px, 2.8dvh, 26px);
   isolation: isolate;
   text-align: center;
 }
@@ -25,15 +24,14 @@ body:has(#screen-result.active) { background: #f5f5f7; }
 #screen-result::before,
 #screen-result::after { display: none; }
 
-/* "7 / 7 tur oynandı" satırı gizli */
 #result-rounds { display: none !important; }
 
-/* Skor kartı: beyaz, sade */
+/* Skor kartı: beyaz, tek büyük rakam */
 #screen-result > .score-card {
-  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 0;
   width: var(--card-w);
   box-sizing: border-box;
-  padding: clamp(28px, 5dvh, 40px) 20px clamp(26px, 4.4dvh, 36px);
+  padding: clamp(32px, 6dvh, 48px) 20px clamp(30px, 5.4dvh, 44px);
   border: 0;
   border-radius: 28px;
   background: var(--r-card);
@@ -44,57 +42,56 @@ body:has(#screen-result.active) { background: #f5f5f7; }
 #screen-result > .score-card::after { display: none; }
 #screen-result > .score-card .label {
   color: var(--r-muted);
-  font-size: 0.75rem;
+  font-size: 0.72rem;
   font-weight: 600;
-  letter-spacing: 0.12em;
+  letter-spacing: 0.14em;
 }
 #screen-result > .score-card .score {
   white-space: nowrap;
   max-width: 100%;
-  margin-top: 6px;
+  margin-top: 8px;
   color: var(--r-ink);
   -webkit-text-fill-color: currentColor;
   background: none;
-  font-size: clamp(3.8rem, 18vw, 5.2rem);
+  font-size: clamp(4rem, 19vw, 5.6rem);
   font-weight: 700;
   letter-spacing: -0.06em;
-  line-height: 1.05;
+  line-height: 1.02;
   font-variant-numeric: tabular-nums;
 }
+#screen-result > .score-card .score.neg { color: #ff3b30; }
 #screen-result > .score-card .score-breakdown {
   max-width: 100%;
   overflow-wrap: anywhere;
   text-align: center;
   text-wrap: balance;
-  margin-top: 10px;
-  min-height: 1.15em;
+  margin-top: 12px;
   padding: 0;
   background: none;
-  font-size: 0.875rem;
+  font-size: 0.9rem;
   font-weight: 500;
   color: var(--r-muted);
 }
 #screen-result > .score-card .score-breakdown:empty { display: none; }
 
-/* Rekor etiketi: sade, hafif yeşil */
+/* Rekor satırı: hap yok, sadece küçük yeşil metin */
 #screen-result > .best {
-  margin: 0;
-  padding: 7px 14px;
-  border-radius: 999px;
-  background: #e9f6ee;
+  margin: -6px 0 0;
+  padding: 0;
+  background: none;
   box-shadow: none;
-  color: #1f7a3d;
-  font-size: 0.85rem;
+  color: #248a3d;
+  font-size: 0.9rem;
   font-weight: 600;
   animation: result-fade 0.6s var(--ease-out) 120ms both;
 }
 #screen-result > .best:empty { display: none; }
 
-/* Seçilen kartlar: beyaz karo, ince çizgi */
+/* Seçilen kartlar: panel yok, sade etiket + ince çizgili beyaz karolar */
 #screen-result > .picked {
   width: var(--card-w);
-  gap: 10px;
-  margin-top: 2px;
+  gap: 12px;
+  margin-top: 4px;
   animation: result-fade 0.6s var(--ease-out) 200ms both;
 }
 #screen-result > .picked > .label {
@@ -102,20 +99,21 @@ body:has(#screen-result.active) { background: #f5f5f7; }
   text-align: center;
   color: var(--r-muted);
   font-weight: 600;
+  opacity: 1;
 }
 #screen-result .picked-item {
   background: var(--r-card);
   border: 1px solid var(--r-line);
   color: var(--r-ink);
   border-radius: 10px;
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
+  font-weight: 600;
 }
 #screen-result .picked-item.neg {
   background: var(--r-card);
-  border-color: rgba(255, 59, 48, 0.2);
+  border-color: rgba(255, 59, 48, 0.25);
   color: #ff3b30;
 }
-#screen-result .picked-arrow { color: var(--r-muted); opacity: 0.6; }
+#screen-result .picked-arrow { color: var(--r-muted); opacity: 0.5; }
 
 /* Düğmeler: Tekrar Oyna (mavi, tam genişlik) · Paylaş + Ana Menü (gri, eşit) */
 #screen-result > .row {
@@ -143,9 +141,7 @@ body:has(#screen-result.active) { background: #f5f5f7; }
 #screen-result > .row .btn:active { transform: scale(0.97); }
 #screen-result > .row .btn:hover { translate: 0 0; filter: none; box-shadow: none; }
 
-#screen-result > .row #btn-again {
-  background: var(--r-accent); color: #fff;
-}
+#screen-result > .row #btn-again { background: var(--r-accent); color: #fff; }
 #screen-result > .row #btn-again:hover { background: var(--r-accent-hover); }
 
 #screen-result > .row #btn-share,
