@@ -40,6 +40,24 @@
   .hero-zone--top:hover :is(.fcard.c1, .fcard.c2, .fcard.c3) { rotate: none; scale: none; }
   .menu .icon-btn::before { transition: none; scale: 1; }
   .ft-links a::after { transition: none; }
+  .card:not(.revealed):not(.peek):not(.closing):not(.picked):hover {
+    translate: none;
+    scale: none;
+  }
+  .card:not(.revealed):not(.peek):not(.closing):not(.picked):hover .face {
+    box-shadow: var(--shadow);
+  }
+  .card:not(.revealed):not(.peek):not(.closing):not(.picked):hover .face.back {
+    filter: none;
+  }
+  #screen-game > .row .btn {
+    transition: none;
+  }
+  #screen-game > .row .btn:hover {
+    translate: none;
+    filter: none;
+    box-shadow: none;
+  }
 
   /* Combo: zıplamak yerine yalnızca belirir ve söner */
   .combo-banner { transform: none; }

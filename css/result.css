@@ -100,18 +100,21 @@ body:has(#screen-result.active) {
   min-height: 56px;
   border-radius: 18px;
   transition: translate 0.28s var(--ease-out), box-shadow 0.28s var(--ease-out),
-    background 0.2s, color 0.2s, border-color 0.2s, transform 0.08s;
+    background 0.48s var(--ease-out), color 0.48s var(--ease-out),
+    border-color 0.48s var(--ease-out), filter 0.48s var(--ease-out), transform 0.08s;
 }
 #screen-result > .row .btn:hover {
   translate: 0 -3px;
+  filter: brightness(0.97);
+  box-shadow: 0 10px 20px rgba(35, 52, 99, 0.15);
 }
 #screen-result > .row .btn.primary:hover {
-  box-shadow: 0 12px 24px rgba(59, 115, 214, 0.3);
+  box-shadow: 0 10px 20px rgba(35, 52, 99, 0.15);
 }
 #screen-result > .row .btn.ghost:hover {
-  color: var(--blue-ink);
-  border-color: var(--blue-strong);
-  background: var(--tint-blue);
+  color: var(--ink);
+  border-color: var(--line);
+  background: var(--surface);
 }
 
 @keyframes result-rise {
@@ -146,11 +149,6 @@ body:has(#screen-result.active) {
   color: color-mix(in srgb, var(--ink) 68%, transparent);
   background: var(--pick-bg); border: 1px solid var(--pick-line);
   transition: translate 0.25s var(--ease-out), box-shadow 0.25s ease, border-color 0.2s ease;
-}
-.picked-item:not(.ghost):hover {
-  translate: 0 -3px;
-  border-color: var(--blue-strong);
-  box-shadow: 0 7px 14px rgba(59, 115, 214, 0.14);
 }
 .picked-item.neg {
   --ring: var(--neg);

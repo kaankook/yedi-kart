@@ -39,12 +39,24 @@
 #screen-game > .grid { grid-row: 5; margin-top: var(--g2); }
 #screen-game > .game-picked { grid-row: 6; margin-top: var(--g2); }
 #screen-game > .row { grid-row: 8; margin-top: var(--g2); }
+#screen-game > .row .btn {
+  transition: translate 0.48s var(--ease-out), box-shadow 0.48s var(--ease-out),
+    background 0.48s var(--ease-out), color 0.48s var(--ease-out),
+    border-color 0.48s var(--ease-out), filter 0.48s var(--ease-out), transform 0.08s;
+}
+@media (hover: hover) and (pointer: fine) {
+  #screen-game > .row .btn:hover {
+    translate: 0 -3px;
+    filter: brightness(0.97);
+    box-shadow: 0 10px 20px rgba(35, 52, 99, 0.15);
+  }
+}
 
 .card {
   position: relative; aspect-ratio: 1 / 1; padding: 0; border: 0;
   background: none; -webkit-perspective: 700px; perspective: 700px; cursor: pointer; font: inherit;
   -webkit-appearance: none; appearance: none;
-  transition: opacity 0.28s ease, transform 0.28s ease;
+  transition: opacity 0.28s ease, transform 0.28s ease, translate 0.48s var(--ease-out);
 }
 .card-inner {
   position: absolute; inset: 0;
@@ -74,6 +86,7 @@
   position: absolute; inset: 0; display: grid; place-items: center;
   border-radius: var(--radius); backface-visibility: hidden; -webkit-backface-visibility: hidden;
   box-shadow: var(--shadow);
+  transition: box-shadow 0.48s var(--ease-out), filter 0.48s var(--ease-out);
 }
 .face.back {
   background: linear-gradient(135deg, var(--blue), var(--lilac));
@@ -85,6 +98,18 @@
   font-size: clamp(2rem, 11vw, 2.8rem); font-weight: 800; font-variant-numeric: tabular-nums;
 }
 .card.revealed, .card.peek { cursor: default; }
+
+@media (hover: hover) and (pointer: fine) {
+  .card:not(.revealed):not(.peek):not(.closing):not(.picked):hover {
+    translate: 0 -3px;
+  }
+  .card:not(.revealed):not(.peek):not(.closing):not(.picked):hover .face {
+    box-shadow: 0 10px 20px rgba(35, 52, 99, 0.15);
+  }
+  .card:not(.revealed):not(.peek):not(.closing):not(.picked):hover .face.back {
+    filter: brightness(0.97);
+  }
+}
 
 /* Renk sınıfları (.picked, .neg, .zero) kapanış dönüşü bitene kadar korunduğu için renk sıçraması olmaz */
 .card.picked .face.front { border-color: var(--mint-strong); background: var(--tint-mint); }
