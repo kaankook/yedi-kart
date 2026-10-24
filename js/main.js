@@ -103,7 +103,7 @@ function onCardClick(index) {
   const next = pickCard(state, index);
   if (!next) return;
   state = next;
-  revealCard(index, state.cards[index].value);
+  revealCard(index, state.cards[index].value, state.comboLevel);
   renderGameInfo(state, true);
   showCombo(state.comboLevel);
   saveState(state);

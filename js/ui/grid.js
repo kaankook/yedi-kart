@@ -51,10 +51,12 @@ export function resetCards() {
 }
 
 // Seçilen kartı açar.
-export function revealCard(index, value) {
+export function revealCard(index, value, comboLevel = 0) {
   const btn = cardEl(index);
   setFace(btn, index, value);
   btn.classList.add('revealed', 'picked');
+  btn.classList.toggle('combo', comboLevel >= 2);
+  btn.classList.toggle('combo-next', comboLevel >= 3);
 }
 
 // Seçilmeyen diğer kartları yarı saydam açar (FOMO etkisi).

@@ -50,6 +50,13 @@
   .card:not(.revealed):not(.peek):not(.closing):not(.picked):hover .face.back {
     filter: none;
   }
+  .card.picked .face.front {
+    animation: none;
+  }
+  .card.picked .face.front::after {
+    display: none;
+    animation: none;
+  }
   #screen-game > .row .btn {
     transition: none;
   }
